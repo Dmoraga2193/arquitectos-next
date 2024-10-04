@@ -39,7 +39,7 @@ const libraries: "places"[] = ["places"];
 
 export default function LeyDelMonoPage() {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCfNUS9Q8jhQNsOVwfsX__Q4B2zdhtSr7o",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     libraries: libraries,
   });
 
@@ -256,7 +256,7 @@ export default function LeyDelMonoPage() {
             acuerdo a la Ley del Mono, asegurando que su construcción cumpla con
             todas las normativas vigentes.
           </p>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6  ">
             {[
               {
                 title: "Evaluación Inicial",
@@ -274,8 +274,11 @@ export default function LeyDelMonoPage() {
                 icon: <Calendar className="h-6 w-6 mb-2" />,
               },
             ].map((service, index) => (
-              <Card key={index}>
-                <CardContent className="p-6">
+              <Card
+                className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                key={index}
+              >
+                <CardContent className="p-6 ">
                   {service.icon}
                   <h3 className="text-xl font-semibold mb-2 text-blue-800">
                     {service.title}
