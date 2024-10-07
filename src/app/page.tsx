@@ -6,12 +6,10 @@ import {
   Home,
   Phone,
   Users,
-  Building,
   Calendar,
   DollarSign,
   Ruler,
   CheckCircle,
-  XCircle,
   FileText,
   Shield,
   CheckSquare,
@@ -118,7 +116,6 @@ export default function LeyDelMonoPage() {
   const [requisitosIncumplidos, setRequisitosIncumplidos] = useState<string[]>(
     []
   );
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -221,7 +218,6 @@ export default function LeyDelMonoPage() {
 
       setCotizacion(Math.round(costoBase));
       setShowCotizacion(true);
-      setFormSubmitted(true); // Marca el formulario como enviado
     }
   };
 
@@ -348,24 +344,7 @@ export default function LeyDelMonoPage() {
     setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
   };
 
-  const InputWithIcon = ({
-    icon,
-    ...props
-  }: { icon: React.ReactNode } & React.ComponentProps<typeof Input>) => (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-        {icon}
-      </div>
-      <Input className="pl-10" {...props} />
-    </div>
-  );
-
-  if (!isLoaded)
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="text-2xl font-semibold text-gray-800">Cargando...</div>
-      </div>
-    );
+  if (!isLoaded) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
@@ -692,6 +671,7 @@ export default function LeyDelMonoPage() {
                 </div>
                 <div>
                   <Label htmlFor="direccion">Dirección</Label>
+
                   <Autocomplete
                     onLoad={(autocomplete) => {
                       autocomplete.setOptions({
@@ -728,6 +708,7 @@ export default function LeyDelMonoPage() {
                       />
                     </div>
                   </Autocomplete>
+
                   {errors.direccion && (
                     <p className="text-sm text-red-500 mt-1">
                       {errors.direccion}
