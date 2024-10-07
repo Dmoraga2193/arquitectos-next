@@ -17,6 +17,12 @@ import {
   CheckSquare,
   ClipboardCheck,
   Award,
+  AlertTriangle,
+  AtSign,
+  User,
+  HousePlus,
+  LandPlot,
+  House,
 } from "lucide-react";
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
@@ -48,8 +54,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 const libraries: "places"[] = ["places"];
+
+const steps = [
+  "Información personal",
+  "Detalles de la propiedad",
+  "Información adicional",
+  "Resumen",
+];
 
 function CountUp({ end, duration = 2000 }: { end: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -79,10 +93,12 @@ export default function LeyDelMonoPage() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     libraries: libraries,
   });
-
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    direccion: "",
+    nombre: "",
+    email: "",
     telefono: "",
+    direccion: "",
     largo: "",
     ancho: "",
     pisos: "1",
@@ -134,8 +150,10 @@ export default function LeyDelMonoPage() {
 
   const validarFormulario = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.direccion) newErrors.direccion = "La dirección es requerida";
+    if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
+    if (!formData.email) newErrors.email = "El email es requerido";
     if (!formData.telefono) newErrors.telefono = "El teléfono es requerido";
+    if (!formData.direccion) newErrors.direccion = "La dirección es requerida";
     if (!formData.largo) newErrors.largo = "El largo del terreno es requerido";
     if (!formData.ancho) newErrors.ancho = "El ancho del terreno es requerido";
     if (!formData.anoConstruccion)
@@ -288,8 +306,59 @@ export default function LeyDelMonoPage() {
     formData.superficieConstruida,
     formData.avaluoFiscal,
     formData.anoConstruccion,
-    formSubmitted,
   ]);
+
+  const validarPaso = (paso: number) => {
+    const newErrors: { [key: string]: string } = {};
+    switch (paso) {
+      case 0:
+        if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
+        if (!formData.email) newErrors.email = "El email es requerido";
+        if (!formData.telefono) newErrors.telefono = "El teléfono es requerido";
+        if (!formData.direccion)
+          newErrors.direccion = "La dirección es requerida";
+        break;
+      case 1:
+        if (!formData.largo)
+          newErrors.largo = "El largo del terreno es requerido";
+        if (!formData.ancho)
+          newErrors.ancho = "El ancho del terreno es requerido";
+        if (!formData.anoConstruccion)
+          newErrors.anoConstruccion = "El año de construcción es requerido";
+        break;
+      case 2:
+        if (!formData.superficieConstruida)
+          newErrors.superficieConstruida =
+            "La superficie construida es requerida";
+        if (!formData.avaluoFiscal)
+          newErrors.avaluoFiscal = "El avalúo fiscal es requerido";
+        break;
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (validarPaso(currentStep)) {
+      setCurrentStep((prevStep) => Math.min(prevStep + 1, steps.length - 1));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep((prevStep) => Math.max(prevStep - 1, 0));
+  };
+
+  const InputWithIcon = ({
+    icon,
+    ...props
+  }: { icon: React.ReactNode } & React.ComponentProps<typeof Input>) => (
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+        {icon}
+      </div>
+      <Input className="pl-10" {...props} />
+    </div>
+  );
 
   if (!isLoaded)
     return (
@@ -520,357 +589,522 @@ export default function LeyDelMonoPage() {
         </section>
 
         {/* Formulario de Cotización */}
-        <Card>
+        <Card className="w-full max-w-4xl mx-auto">
           <CardHeader>
-            <CardTitle className="text-3xl font-semibold text-blue-800 text-center">
-              Solicite una Cotización
-            </CardTitle>
+            <CardTitle>Solicitar Cotización</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="grid md:grid-cols-2 gap-6">
-              <div className="md:col-span-2">
-                <Label htmlFor="direccion">Dirección</Label>
-                <Autocomplete
-                  onLoad={(autocomplete) => {
-                    autocomplete.setOptions({
-                      types: ["address"],
-                      componentRestrictions: { country: "cl" },
-                    });
-                  }}
-                  onPlaceChanged={() => {
-                    const autocomplete = document.querySelector(
-                      'input[name="direccion"]'
-                    ) as HTMLInputElement;
-                    if (autocomplete) {
-                      const place = autocomplete.value;
-                      setFormData((prevState) => ({
-                        ...prevState,
-                        direccion: place,
-                      }));
-                    }
-                  }}
-                >
+            <div className="mb-8">
+              <div className="flex justify-between">
+                {steps.map((step, index) => (
+                  <div
+                    key={step}
+                    className={`flex items-center ${
+                      index <= currentStep
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        index <= currentStep
+                          ? "bg-blue-900 text-white"
+                          : "bg-muted"
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+                    <span className="ml-2 text-sm hidden sm:inline">
+                      {step}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {currentStep === 0 && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="nombre">Nombre completo</Label>
                   <div className="relative mt-1">
-                    <Home
+                    <User
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       size={18}
                     />
                     <Input
-                      type="text"
-                      name="direccion"
-                      id="direccion"
+                      id="nombre"
+                      name="nombre"
                       className="pl-10"
-                      placeholder="Ingrese la dirección"
-                      value={formData.direccion}
+                      value={formData.nombre}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese su nombre completo"
+                    />
+                  </div>
+
+                  {errors.nombre && (
+                    <p className="text-sm text-red-500 mt-1">{errors.nombre}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="email">Correo electrónico</Label>
+                  <div className="relative mt-1">
+                    <AtSign
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      className="pl-10"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese su correo electrónico"
+                    />
+                  </div>
+
+                  {errors.email && (
+                    <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="telefono">Teléfono</Label>
+                  <div className="relative mt-1">
+                    <Phone
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      type="tel"
+                      name="telefono"
+                      id="telefono"
+                      className="pl-10"
+                      placeholder="+56 9 XXXX XXXX"
+                      value={formData.telefono}
                       onChange={handleInputChange}
                     />
                   </div>
-                </Autocomplete>
-                {errors.direccion && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.direccion}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="telefono">Teléfono</Label>
-                <div className="relative mt-1">
-                  <Phone
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="tel"
-                    name="telefono"
-                    id="telefono"
-                    className="pl-10"
-                    placeholder="+56 9 XXXX XXXX"
-                    value={formData.telefono}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.telefono && (
-                  <p className="mt-1 text-sm text-red-600">{errors.telefono}</p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="largo">Largo del Terreno (m)</Label>
-                <div className="relative mt-1">
-                  <Ruler
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="number"
-                    name="largo"
-                    id="largo"
-                    className="pl-10"
-                    placeholder="Ej: 20"
-                    value={formData.largo}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.largo && (
-                  <p className="mt-1 text-sm text-red-600">{errors.largo}</p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="ancho">Ancho del Terreno (m)</Label>
-                <div className="relative mt-1">
-                  <Ruler
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="number"
-                    name="ancho"
-                    id="ancho"
-                    className="pl-10"
-                    placeholder="Ej: 15"
-                    value={formData.ancho}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.ancho && (
-                  <p className="mt-1 text-sm text-red-600">{errors.ancho}</p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="pisos">Número de Pisos</Label>
-                <Select
-                  name="pisos"
-                  value={formData.pisos}
-                  onValueChange={(value) =>
-                    handleInputChange({
-                      target: { name: "pisos", value },
-                    } as any)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Seleccione número de pisos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 piso</SelectItem>
-                    <SelectItem value="2">2 pisos</SelectItem>
-                    <SelectItem value="3+">3 o más pisos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="anoConstruccion">Año de Construcción</Label>
-                <div className="relative mt-1">
-                  <Calendar
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="number"
-                    name="anoConstruccion"
-                    id="anoConstruccion"
-                    className="pl-10"
-                    placeholder="Ej: 1990"
-                    value={formData.anoConstruccion}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.anoConstruccion && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.anoConstruccion}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="superficieConstruida">
-                  Superficie Construida (m²)
-                </Label>
-                <div className="relative mt-1">
-                  <Building
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="number"
-                    name="superficieConstruida"
-                    id="superficieConstruida"
-                    className="pl-10"
-                    placeholder="Ej: 80"
-                    value={formData.superficieConstruida}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.superficieConstruida && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.superficieConstruida}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="avaluoFiscal">Avalúo Fiscal (UF)</Label>
-                <div className="relative mt-1">
-                  <DollarSign
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                    size={18}
-                  />
-                  <Input
-                    type="number"
-                    name="avaluoFiscal"
-                    id="avaluoFiscal"
-                    className="pl-10"
-                    placeholder="Ej: 1000"
-                    value={formData.avaluoFiscal}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {errors.avaluoFiscal && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.avaluoFiscal}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="tipoPropiedad">Tipo de Propiedad</Label>
-                <Select
-                  name="tipoPropiedad"
-                  value={formData.tipoPropiedad}
-                  onValueChange={(value) =>
-                    handleInputChange({
-                      target: { name: "tipoPropiedad", value },
-                    } as any)
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Seleccione tipo de propiedad" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="vivienda">Vivienda</SelectItem>
-                    <SelectItem value="microempresa">Microempresa</SelectItem>
-                    <SelectItem value="equipamientoSocial">
-                      Equipamiento Social
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="subsidio27F"
-                  name="subsidio27F"
-                  checked={formData.subsidio27F}
-                  onCheckedChange={(checked) =>
-                    handleCheckboxChange({
-                      target: { name: "subsidio27F", checked },
-                    } as any)
-                  }
-                />
-                <label
-                  htmlFor="subsidio27F"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  ¿Tiene subsidio 27F?
-                </label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Users className="h-4 w-4 text-gray-500 cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>
-                        Subsidio para la reconstrucción de viviendas afectadas
-                        por el terremoto del 27 de febrero de 2010
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="md:col-span-2">
-                <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
-                  <CardContent className="p-4">
-                    <h4 className="text-lg font-semibold flex items-center text-blue-800">
-                      <Calculator className="h-5 w-5 mr-2" />
-                      Área Total del Terreno
-                    </h4>
-                    <p className="text-3xl font-bold text-blue-700 mt-2">
-                      {calcularAreaTerreno()} m²
+                  {errors.telefono && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.telefono}
                     </p>
-                  </CardContent>
-                </Card>
-              </div>
-              {formSubmitted && (
-                <div className="md:col-span-2">
-                  <Card
-                    className={`${
-                      cumpleRequisitos === null
-                        ? "bg-gray-100"
-                        : cumpleRequisitos
-                        ? "bg-green-100"
-                        : "bg-red-100"
-                    }`}
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="direccion">Dirección</Label>
+                  <Autocomplete
+                    onLoad={(autocomplete) => {
+                      autocomplete.setOptions({
+                        types: ["address"],
+                        componentRestrictions: { country: "cl" },
+                      });
+                    }}
+                    onPlaceChanged={() => {
+                      const autocomplete = document.querySelector(
+                        'input[name="direccion"]'
+                      ) as HTMLInputElement;
+                      if (autocomplete) {
+                        const place = autocomplete.value;
+                        setFormData((prevState) => ({
+                          ...prevState,
+                          direccion: place,
+                        }));
+                      }
+                    }}
                   >
-                    <CardContent className="p-4">
-                      <h4 className="text-lg font-semibold flex items-center">
-                        {cumpleRequisitos === null ? (
-                          <span className="text-gray-800">
-                            Requisitos Ley del Mono
-                          </span>
-                        ) : cumpleRequisitos ? (
-                          <div className="flex items-center text-green-600">
-                            <CheckCircle className="mr-2 h-5 w-5" />
-                            <span>Cumple con los requisitos</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center text-red-600">
-                            <XCircle className="mr-2 h-5 w-5" />
-                            <span>No cumple con los requisitos</span>
-                          </div>
-                        )}
-                      </h4>
-                      <p className="mt-2 text-sm">
-                        {cumpleRequisitos === null
-                          ? "Complete los campos para verificar si cumple con los requisitos."
-                          : cumpleRequisitos
-                          ? "Su propiedad cumple con los requisitos para acogerse a la Ley del Mono."
-                          : "Su propiedad no cumple con todos los requisitos para acogerse a la Ley del Mono. Revise los siguientes puntos:"}
+                    <div className="relative mt-1">
+                      <Home
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={18}
+                      />
+                      <Input
+                        type="text"
+                        name="direccion"
+                        id="direccion"
+                        className="pl-10"
+                        placeholder="Ingrese la dirección"
+                        value={formData.direccion}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </Autocomplete>
+                  {errors.direccion && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.direccion}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {currentStep === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="largo">Largo del terreno (metros)</Label>
+                  <div className="relative mt-1">
+                    <Ruler
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="largo"
+                      name="largo"
+                      type="number"
+                      className="pl-10"
+                      value={formData.largo}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese el largo del terreno. Ej: 20"
+                    />
+                  </div>
+
+                  {errors.largo && (
+                    <p className="text-sm text-red-500 mt-1">{errors.largo}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="ancho">Ancho del terreno (metros)</Label>
+                  <div className="relative mt-1">
+                    <Ruler
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="ancho"
+                      name="ancho"
+                      type="number"
+                      className="pl-10"
+                      value={formData.ancho}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese el ancho del terreno. Ej: 10"
+                    />
+                  </div>
+
+                  {errors.ancho && (
+                    <p className="text-sm text-red-500 mt-1">{errors.ancho}</p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="pisos">Número de Pisos</Label>
+                  <div className="relative mt-1">
+                    <HousePlus
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Select
+                      name="pisos"
+                      value={formData.pisos}
+                      onValueChange={(value) =>
+                        handleInputChange({
+                          target: { name: "pisos", value },
+                        } as any)
+                      }
+                    >
+                      <SelectTrigger className="mt-1 pl-10">
+                        <SelectValue placeholder="Seleccione número de pisos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1 piso</SelectItem>
+                        <SelectItem value="2">2 pisos</SelectItem>
+                        <SelectItem value="3+">3 o más pisos</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="anoConstruccion">Año de construcción</Label>
+                  <div className="relative mt-1">
+                    <Calendar
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="anoConstruccion"
+                      name="anoConstruccion"
+                      type="number"
+                      className="pl-10"
+                      value={formData.anoConstruccion}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese el año de construcción"
+                    />
+                  </div>
+
+                  {errors.anoConstruccion && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.anoConstruccion}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {currentStep === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="superficieConstruida">
+                    Superficie construida (m²)
+                  </Label>
+                  <div className="relative mt-1">
+                    <LandPlot
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="superficieConstruida"
+                      name="superficieConstruida"
+                      type="number"
+                      className="pl-10"
+                      value={formData.superficieConstruida}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese la superficie construida"
+                    />
+                  </div>
+
+                  {errors.superficieConstruida && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.superficieConstruida}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="avaluoFiscal">Avalúo fiscal (UF)</Label>
+                  <div className="relative mt-1">
+                    <DollarSign
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="avaluoFiscal"
+                      name="avaluoFiscal"
+                      type="number"
+                      className="pl-10"
+                      value={formData.avaluoFiscal}
+                      onChange={handleInputChange}
+                      placeholder="Ingrese el avalúo fiscal. Ej: 1000"
+                    />
+                  </div>
+
+                  {errors.avaluoFiscal && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {errors.avaluoFiscal}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="tipoPropiedad">Tipo de Propiedad</Label>
+                  <div className="relative mt-1">
+                    <House
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Select
+                      name="tipoPropiedad"
+                      value={formData.tipoPropiedad}
+                      onValueChange={(value) =>
+                        handleInputChange({
+                          target: { name: "tipoPropiedad", value },
+                        } as any)
+                      }
+                    >
+                      <SelectTrigger className="mt-1 pl-10">
+                        <SelectValue placeholder="Seleccione tipo de propiedad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="vivienda">Vivienda</SelectItem>
+                        <SelectItem value="microempresa">
+                          Microempresa
+                        </SelectItem>
+                        <SelectItem value="equipamientoSocial">
+                          Equipamiento Social
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="subsidio27F"
+                    name="subsidio27F"
+                    checked={formData.subsidio27F}
+                    onCheckedChange={(checked) =>
+                      handleCheckboxChange({
+                        target: { name: "subsidio27F", checked },
+                      } as any)
+                    }
+                  />
+                  <label
+                    htmlFor="subsidio27F"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    ¿Tiene subsidio 27F?
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Users className="h-4 w-4 text-gray-500 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Subsidio para la reconstrucción de viviendas afectadas
+                          por el terremoto del 27 de febrero de 2010
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 3 && (
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Resumen de la cotización
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Nombre</p>
+                      <p className="font-medium">{formData.nombre}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="font-medium">{formData.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Teléfono</p>
+                      <p className="font-medium">{formData.telefono}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Dirección</p>
+                      <p className="font-medium">{formData.direccion}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Dimensiones del terreno
                       </p>
-                      {!cumpleRequisitos &&
-                        requisitosIncumplidos.length > 0 && (
-                          <ul className="list-disc list-inside mt-2 text-sm text-red-700">
-                            {requisitosIncumplidos.map((requisito, index) => (
-                              <li key={index}>{requisito}</li>
-                            ))}
-                          </ul>
-                        )}
+                      <p className="font-medium">
+                        {formData.largo}m x {formData.ancho}m
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Número de pisos</p>
+                      <p className="font-medium">{formData.pisos}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Año de construcción
+                      </p>
+                      <p className="font-medium">{formData.anoConstruccion}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Superficie construida
+                      </p>
+                      <p className="font-medium">
+                        {formData.superficieConstruida} m²
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Avalúo fiscal</p>
+                      <p className="font-medium">{formData.avaluoFiscal} UF</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Tipo de propiedad</p>
+                      <p className="font-medium">{formData.tipoPropiedad}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Subsidio 27F</p>
+                      <p className="font-medium">
+                        {formData.subsidio27F ? "Sí" : "No"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {cumpleRequisitos ? (
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="text-green-500" />
+                        <h4 className="text-lg font-semibold text-green-700">
+                          Cumple con los requisitos
+                        </h4>
+                      </div>
+                      <p className="mt-2 text-green-600">
+                        Su propiedad cumple con los requisitos para acogerse a
+                        la Ley del Mono.
+                      </p>
                     </CardContent>
                   </Card>
-                </div>
-              )}
-              <div className="md:col-span-2">
-                <Button
-                  type="button"
-                  onClick={calcularCotizacion}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300"
-                >
-                  Calcular Cotización
-                </Button>
-              </div>
-              {showCotizacion && (
-                <div className="md:col-span-2">
-                  <Card className="bg-green-100 shadow-lg">
-                    <CardContent className="p-6">
-                      <h4 className="text-xl font-semibold flex items-center text-green-800 mb-4">
-                        <Calculator className="h-6 w-6 mr-2" />
-                        Cotización Estimada
-                      </h4>
-                      <p className="text-4xl font-bold text-green-600 mb-2">
+                ) : (
+                  <Card className="bg-red-50 border-red-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <AlertTriangle className="text-red-500" />
+                        <h4 className="text-lg font-semibold text-red-700">
+                          No cumple con los requisitos
+                        </h4>
+                      </div>
+                      <p className="mt-2 text-red-600">
+                        Su propiedad no cumple con todos los requisitos para
+                        acogerse a la Ley del Mono. Revise los siguientes
+                        puntos:
+                      </p>
+                      <ul className="list-disc list-inside mt-2 text-sm text-red-600">
+                        {requisitosIncumplidos.map((requisito, index) => (
+                          <li key={index}>{requisito}</li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {showCotizacion && (
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <Calculator className="text-green-500" />
+                        <h4 className="text-lg font-semibold text-green-700">
+                          Cotización Estimada
+                        </h4>
+                      </div>
+                      <p className="mt-2 text-3xl font-bold text-green-600">
                         ${cotizacion.toLocaleString("es-CL")} CLP
                       </p>
-                      <p className="text-sm text-green-700 italic">
+                      <p className="text-sm text-green-600 mt-2">
                         *Este es un valor estimado. La cotización final puede
                         variar según la complejidad del proyecto.
                       </p>
                     </CardContent>
                   </Card>
-                </div>
+                )}
+              </div>
+            )}
+
+            <Separator className="my-6" />
+
+            <div className="mt-8 flex justify-between">
+              {currentStep > 0 && (
+                <Button onClick={prevStep} variant="outline">
+                  Anterior
+                </Button>
               )}
-            </form>
+              {currentStep < steps.length - 1 ? (
+                <Button
+                  onClick={nextStep}
+                  className="bg-gradient-to-r from-blue-500 to-blue-900 text-white"
+                >
+                  Siguiente
+                </Button>
+              ) : (
+                <Button
+                  onClick={calcularCotizacion}
+                  disabled={!cumpleRequisitos}
+                  className="bg-green-600 text-white"
+                >
+                  Solicitar Cotización
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </main>
