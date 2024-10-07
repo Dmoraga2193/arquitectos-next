@@ -21,6 +21,8 @@ import {
   HousePlus,
   LandPlot,
   House,
+  MapPin,
+  Mail,
 } from "lucide-react";
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
@@ -53,38 +55,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useInView } from "react-intersection-observer";
+import Image from "next/image";
 
 const libraries: "places"[] = ["places"];
-
-const steps = [
-  "Información personal",
-  "Detalles de la propiedad",
-  "Información adicional",
-  "Resumen",
-];
-
-function CountUp({ end, duration = 2000 }: { end: number; duration?: number }) {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    let startTime: number | undefined;
-    let animationFrame: number;
-
-    const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = timestamp - startTime;
-      setCount(Math.min(end, Math.floor((progress / duration) * end)));
-      if (progress < duration) {
-        animationFrame = requestAnimationFrame(step);
-      }
-    };
-
-    animationFrame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [end, duration]);
-
-  return <span>{count}</span>;
-}
 
 export default function LeyDelMonoPage() {
   const { isLoaded } = useLoadScript({
@@ -116,6 +92,51 @@ export default function LeyDelMonoPage() {
   const [requisitosIncumplidos, setRequisitosIncumplidos] = useState<string[]>(
     []
   );
+
+  const steps = [
+    "Información personal",
+    "Detalles de la propiedad",
+    "Información adicional",
+    "Resumen",
+  ];
+
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [satisfactionRate, setSatisfactionRate] = useState(0);
+  const [yearsExperience, setYearsExperience] = useState(0);
+
+  useEffect(() => {
+    if (inView) {
+      const projectsInterval = setInterval(() => {
+        setProjectsCount((prev) => Math.min(prev + 10, 500));
+      }, 40);
+
+      const satisfactionInterval = setInterval(() => {
+        setSatisfactionRate((prev) => Math.min(prev + 1, 98));
+      }, 40);
+
+      const yearsInterval = setInterval(() => {
+        setYearsExperience((prev) => Math.min(prev + 1, 15));
+      }, 200);
+
+      return () => {
+        clearInterval(projectsInterval);
+        clearInterval(satisfactionInterval);
+        clearInterval(yearsInterval);
+      };
+    }
+  }, [inView]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      once: true,
+    });
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -349,22 +370,52 @@ export default function LeyDelMonoPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
       {/* Hero Section */}
-      <header className="bg-gradient-to-r from-blue-700 to-blue-900 text-white">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <h1 className="text-4xl font-bold mb-4">
-            Regularización de Proyectos - Ley del Mono
-          </h1>
-          <p className="text-xl">
-            Expertos en regularización de construcciones según la legislación
-            chilena
-          </p>
+      <header className="relative bg-blue-900 text-white overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/assets/images/fondo.jpg"
+            alt="Fondo arquitectónico"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            priority
+          />
+          <div className="absolute inset-0 bg-blue-900 opacity-60"></div>
+        </div>
+        <div className="relative z-10 container mx-auto px-4 py-24 max-w-4xl flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 mb-8 md:mb-0">
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-yellow-300 drop-shadow-lg">
+              Regularización Sin Complicaciones
+            </h1>
+            <p className="text-xl font-semibold text-white drop-shadow-md">
+              Navegamos por ti la Ley del Mono. Asegura el futuro de tu
+              propiedad con nuestro equipo de arquitectos especializados.
+            </p>
+          </div>
+          <div className="md:w-1/2">
+            <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-lg">
+              <video
+                className="w-full h-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              >
+                <source
+                  src="/assets/videos/video_hero.webm"
+                  type="video/webm"
+                />
+                Tu navegador no soporta el elemento de video.
+              </video>
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Contenido Principal */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Sección Conócenos */}
-        <Card className="mb-12">
+        <Card className="mb-12" data-aos="zoom-in">
           <CardHeader>
             <CardTitle className="text-3xl font-semibold flex items-center text-blue-800">
               <Users className="mr-2 h-8 w-8" /> Conócenos
@@ -422,15 +473,21 @@ export default function LeyDelMonoPage() {
 
         {/* Nuestros servicios  */}
         <section className="mb-12">
-          <h2 className="text-3xl font-semibold mb-4 text-blue-800 text-center">
+          <h2
+            className="text-3xl font-semibold mb-4 text-blue-800 text-center"
+            data-aos="zoom-in"
+          >
             Nuestros Servicios
           </h2>
-          <p className="text-lg mb-6 text-gray-700 text-center">
+          <p
+            className="text-lg mb-6 text-gray-700 text-center"
+            data-aos="zoom-in"
+          >
             Ofrecemos servicios profesionales para regularizar su propiedad de
             acuerdo a la Ley del Mono, asegurando que su construcción cumpla con
             todas las normativas vigentes.
           </p>
-          <div className="grid md:grid-cols-3 gap-6  ">
+          <div className="grid md:grid-cols-3 gap-6 " data-aos="zoom-in-up">
             {[
               {
                 title: "Evaluación Inicial",
@@ -449,7 +506,7 @@ export default function LeyDelMonoPage() {
               },
             ].map((service, index) => (
               <Card
-                className="transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
                 key={index}
               >
                 <CardContent className="p-6 ">
@@ -468,14 +525,20 @@ export default function LeyDelMonoPage() {
         <section className="mb-12">
           <div className="py-12 dark:bg-gray-900">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-3xl font-semibold text-center text-blue-800 dark:text-gray-100 mb-8">
+              <h2
+                className="text-3xl font-semibold text-center text-blue-800 dark:text-gray-100 mb-8"
+                data-aos="zoom-in"
+              >
                 Lo que dicen nuestros clientes
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                data-aos="zoom-in-up"
+              >
                 {testimonials.map((testimonial, index) => (
                   <Card
                     key={index}
-                    className="bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                    className="bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-3"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center mb-4">
@@ -511,13 +574,19 @@ export default function LeyDelMonoPage() {
         {/* Preguntas Frecuentes */}
         <section className="mb-12">
           <div className="max-w-4xl mx-auto p-4">
-            <h2 className="text-3xl font-semibold mb-6 text-blue-800 dark:text-blue-300 text-center">
+            <h2
+              className="text-3xl font-semibold mb-6 text-blue-800 dark:text-blue-300 text-center"
+              data-aos="flip-up"
+            >
               Preguntas Frecuentes
             </h2>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, index) => (
                 <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger className="text-left font-semibold text-gray-800 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                  <AccordionTrigger
+                    className="text-left font-semibold text-gray-800 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                    data-aos="flip-up"
+                  >
                     {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-700 dark:text-gray-300">
@@ -530,45 +599,39 @@ export default function LeyDelMonoPage() {
         </section>
 
         {/* Sección de Estadísticas */}
-        <section className="py-12 bg-blue-900 text-white rounded-lg mb-12">
+        <motion.section
+          ref={ref}
+          initial={{ opacity: 0, y: 50 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.5 }}
+          className="py-12 bg-blue-900 text-white rounded-lg mb-12"
+        >
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h3 className="text-4xl font-bold mb-2">
-                  <CountUp end={500} />+
+              <div>
+                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+                  {projectsCount}+
                 </h3>
                 <p className="text-xl">Proyectos Completados</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <h3 className="text-4xl font-bold mb-2">
-                  <CountUp end={98} />%
+              </div>
+              <div>
+                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+                  {satisfactionRate}%
                 </h3>
                 <p className="text-xl">Clientes Satisfechos</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <h3 className="text-4xl font-bold mb-2">
-                  <CountUp end={15} />
+              </div>
+              <div>
+                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+                  {yearsExperience}
                 </h3>
                 <p className="text-xl">Años de Experiencia</p>
-              </motion.div>
+              </div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Formulario de Cotización */}
-        <Card className="w-full max-w-4xl mx-auto">
+        <Card className="w-full max-w-4xl mx-auto" data-aos="zoom-in">
           <CardHeader>
             <CardTitle>Solicitar Cotización</CardTitle>
           </CardHeader>
@@ -1088,6 +1151,68 @@ export default function LeyDelMonoPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Nueva sección: Nuestra Sucursal */}
+        <section className="mb-12 mt-12">
+          <h2
+            className="text-3xl font-semibold text-blue-800 text-center mb-8"
+            data-aos="zoom-in"
+          >
+            Nuestra Sucursal
+          </h2>
+          <Card className="mb-6" data-aos="fade-up">
+            <CardContent className="p-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-blue-800">
+                    Información de Contacto
+                  </h3>
+                  <div className="space-y-2">
+                    <p className="flex items-center">
+                      <MapPin className="h-10 w-10 text-blue-600 mr-2" />
+                      Radal del Obispo Francisco Anabalón Duarte 1015, 8500771
+                      Quinta Normal, Región Metropolitana
+                    </p>
+                    <p className="flex items-center">
+                      <Phone className="h-5 w-5 text-blue-600 mr-2" />
+                      +56 2 2345 6789
+                    </p>
+                    <p className="flex items-center">
+                      <Mail className="h-5 w-5 text-blue-600 mr-2" />
+                      contacto@arquitectosnext.cl
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-blue-800">
+                    Horario de Atención
+                  </h3>
+                  <p>Lunes a Jueves: 8:30 AM - 6:00 PM</p>
+                  <p>Viernes: 8:30 AM - 4:45 PM</p>
+                  <p>Sabado y Domingo: Cerrado</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="relative mt-8" data-aos="zoom-in">
+            <div className="absolute inset-0 bg-blue-200 transform rotate-3 rounded-lg shadow-lg"></div>
+            <div className="absolute inset-0 bg-white transform -rotate-3 rounded-lg shadow-lg"></div>
+            <div className="relative bg-white p-4 rounded-lg shadow-xl transform transition-all duration-300 hover:scale-105">
+              <div className="aspect-w-16 aspect-h-9">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d699.8964686150196!2d-70.7027135670081!3d-33.441817032144115!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662c46fa6a860c7%3A0xb4d5edc02fce12df!2sRadal%20del%20Obispo%20Francisco%20Anabal%C3%B3n%20Duarte%201015%2C%208500771%20Quinta%20Normal%2C%20Regi%C3%B3n%20Metropolitana!5e0!3m2!1ses-419!2scl!4v1728328131503!5m2!1ses-419!2scl"
+                  width="100%"
+                  height="450"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Ubicación de nuestra sucursal"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Footer */}
