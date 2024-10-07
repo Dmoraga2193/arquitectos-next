@@ -23,6 +23,8 @@ import {
   House,
   MapPin,
   Mail,
+  X,
+  Menu,
 } from "lucide-react";
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
@@ -59,6 +61,9 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useInView } from "react-intersection-observer";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import SmoothScroll from "@/components/SmoothScroll";
+import Navbar from "@/components/Navbar";
 
 const libraries: "places"[] = ["places"];
 
@@ -67,6 +72,7 @@ export default function LeyDelMonoPage() {
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     libraries: libraries,
   });
+
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     nombre: "",
@@ -369,8 +375,13 @@ export default function LeyDelMonoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 font-sans">
+      <Navbar />
+      <SmoothScroll />
       {/* Hero Section */}
-      <header className="relative bg-blue-900 text-white overflow-hidden">
+      <header
+        id="inicio"
+        className="relative bg-blue-900 text-white overflow-hidden"
+      >
         <div className="absolute inset-0 z-0">
           <Image
             src="/assets/images/fondo.jpg"
@@ -413,9 +424,9 @@ export default function LeyDelMonoPage() {
       </header>
 
       {/* Contenido Principal */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4  max-w-4xl py-16">
         {/* Sección Conócenos */}
-        <Card className="mb-12" data-aos="zoom-in">
+        <Card id="conocenos" className="mb-12 scroll-mt-20" data-aos="zoom-in">
           <CardHeader>
             <CardTitle className="text-3xl font-semibold flex items-center text-blue-800">
               <Users className="mr-2 h-8 w-8" /> Conócenos
@@ -472,7 +483,7 @@ export default function LeyDelMonoPage() {
         </Card>
 
         {/* Nuestros servicios  */}
-        <section className="mb-12">
+        <section id="servicios" className="mb-12 scroll-mt-20">
           <h2
             className="text-3xl font-semibold mb-4 text-blue-800 text-center"
             data-aos="zoom-in"
@@ -522,7 +533,7 @@ export default function LeyDelMonoPage() {
         </section>
 
         {/* Testimonios */}
-        <section className="mb-12">
+        <section id="testimonios" className="mb-12 scroll-mt-20">
           <div className="py-12 dark:bg-gray-900">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2
@@ -572,7 +583,7 @@ export default function LeyDelMonoPage() {
         </section>
 
         {/* Preguntas Frecuentes */}
-        <section className="mb-12">
+        <section id="faq" className="mb-12 scroll-mt-20">
           <div className="max-w-4xl mx-auto p-4">
             <h2
               className="text-3xl font-semibold mb-6 text-blue-800 dark:text-blue-300 text-center"
@@ -632,8 +643,10 @@ export default function LeyDelMonoPage() {
 
         {/* Formulario de Cotización */}
         <Card className="w-full max-w-4xl mx-auto" data-aos="zoom-in">
-          <CardHeader>
-            <CardTitle>Solicitar Cotización</CardTitle>
+          <CardHeader id="cotiza" className="scroll-mt-20 py-18">
+            <CardTitle className="text-3xl font-semibold mb-6 text-blue-800 dark:text-blue-300 text-center">
+              Solicitar Cotización
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-8">
@@ -1153,7 +1166,7 @@ export default function LeyDelMonoPage() {
         </Card>
 
         {/* Nueva sección: Nuestra Sucursal */}
-        <section className="mb-12 mt-12">
+        <section id="contacto" className="mb-12 mt-12 scroll-mt-20 py-18">
           <h2
             className="text-3xl font-semibold text-blue-800 text-center mb-8"
             data-aos="zoom-in"
