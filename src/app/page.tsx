@@ -24,6 +24,7 @@ import {
   MapPin,
   Mail,
   Clock,
+  Briefcase,
 } from "lucide-react";
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
@@ -350,7 +351,7 @@ export default function LeyDelMonoPage() {
     }
   };
 
-  const services = [
+  const nosotros = [
     {
       icon: <CheckSquare className="h-8 w-8 text-blue-600" />,
       title: "Evaluación Integral",
@@ -372,6 +373,24 @@ export default function LeyDelMonoPage() {
       title: "Cumplimiento Normativo",
       description:
         "Garantizamos el cumplimiento de todas las normativas vigentes",
+    },
+  ];
+
+  const services = [
+    {
+      title: "Evaluación Inicial",
+      desc: "Análisis detallado de su propiedad",
+      icon: <ClipboardCheck className="h-10 w-10 text-blue-600" />,
+    },
+    {
+      title: "Regularización",
+      desc: "Trámites y documentación necesaria",
+      icon: <FileText className="h-10 w-10 text-blue-600" />,
+    },
+    {
+      title: "Certificación",
+      desc: "Obtención de certificados de regularización",
+      icon: <Award className="h-10 w-10 text-blue-600" />,
     },
   ];
 
@@ -571,7 +590,7 @@ export default function LeyDelMonoPage() {
               eficiente y profesional.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {services.map((service, index) => (
+              {nosotros.map((service, index) => (
                 <div
                   key={index}
                   className="flex items-start bg-white p-4 rounded-lg shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
@@ -590,55 +609,43 @@ export default function LeyDelMonoPage() {
         </Card>
 
         {/* Nuestros servicios  */}
-        <section id="servicios" className="mb-12 scroll-mt-20">
-          <h2
-            className="text-3xl font-semibold mb-4 text-blue-800 text-center"
-            data-aos="zoom-in"
-          >
-            Nuestros Servicios
-          </h2>
-          <p
-            className="text-lg mb-6 text-gray-700 text-center"
-            data-aos="zoom-in"
-          >
-            Ofrecemos servicios profesionales para regularizar su propiedad de
-            acuerdo a la Ley del Mono, asegurando que su construcción cumpla con
-            todas las normativas vigentes.
-          </p>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 "
-            data-aos="zoom-in-up"
-          >
-            {[
-              {
-                title: "Evaluación Inicial",
-                desc: "Análisis detallado de su propiedad",
-                icon: <ClipboardCheck className="h-8 w-8 mb-4 text-blue-600" />,
-              },
-              {
-                title: "Regularización",
-                desc: "Trámites y documentación necesaria",
-                icon: <FileText className="h-8 w-8 mb-4 text-blue-600" />,
-              },
-              {
-                title: "Certificación",
-                desc: "Obtención de certificados de regularización",
-                icon: <Award className="h-8 w-8 mb-4 text-blue-600" />,
-              },
-            ].map((service, index) => (
-              <Card
-                className="transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-                key={index}
-              >
-                <CardContent className="p-6 ">
-                  {service.icon}
-                  <h3 className="text-xl font-semibold mb-2 text-blue-800">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-700">{service.desc}</p>
-                </CardContent>
-              </Card>
-            ))}
+        <section id="servicios" className="py-20">
+          <div className="container mx-auto px-4">
+            <h2
+              className="text-4xl font-bold mb-6 text-blue-800 text-center"
+              data-aos="zoom-in"
+            >
+              Nuestros Servicios
+            </h2>
+            <p
+              className="text-xl mb-12 text-gray-700 text-center max-w-3xl mx-auto"
+              data-aos="zoom-in"
+            >
+              Ofrecemos servicios profesionales para regularizar su propiedad de
+              acuerdo a la Ley del Mono, asegurando que su construcción cumpla
+              con todas las normativas vigentes.
+            </p>
+            <div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              data-aos="zoom-in-up"
+            >
+              {services.map((service, index) => (
+                <Card
+                  key={index}
+                  className="transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+                >
+                  <CardContent className="p-6 flex items-start">
+                    <div className="mr-4 mt-1">{service.icon}</div>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2 text-blue-800">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-700">{service.desc}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -647,7 +654,7 @@ export default function LeyDelMonoPage() {
           <div className="py-12 dark:bg-gray-900">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2
-                className="text-3xl font-semibold text-center text-blue-800 dark:text-gray-100 mb-8"
+                className="text-4xl font-bold mb-6 text-blue-800 text-center pb-10"
                 data-aos="zoom-in"
               >
                 Lo que dicen nuestros clientes
@@ -705,7 +712,7 @@ export default function LeyDelMonoPage() {
               {faqs.map((faq, index) => (
                 <AccordionItem value={`item-${index}`} key={index}>
                   <AccordionTrigger
-                    className="text-left font-semibold text-gray-800 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                    className="text-left font-semibold text-gray-800 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-lg"
                     data-aos="flip-up"
                   >
                     {faq.question}
@@ -729,23 +736,43 @@ export default function LeyDelMonoPage() {
         >
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
-              <div>
-                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                  <Briefcase className="w-40 h-40 text-white" />
+                </div>
+                <h3
+                  className="text-4xl font-bold mb-2 relative"
+                  aria-live="polite"
+                >
                   {projectsCount}+
                 </h3>
-                <p className="text-xl">Proyectos Completados</p>
+                <p className="text-xl relative">Proyectos Completados</p>
               </div>
-              <div>
-                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                  <User className="w-40 h-40 text-white" />
+                </div>
+                <h3
+                  className="text-4xl font-bold mb-2 relative"
+                  aria-live="polite"
+                >
                   {satisfactionRate}%
                 </h3>
-                <p className="text-xl">Clientes Satisfechos</p>
+                <p className="text-xl relative">Clientes Satisfechos</p>
               </div>
-              <div>
-                <h3 className="text-4xl font-bold mb-2" aria-live="polite">
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                  <Clock className="w-40 h-40 text-white" />
+                </div>
+                <h3
+                  className="text-4xl font-bold mb-2 relative"
+                  aria-live="polite"
+                >
                   {yearsExperience}
                 </h3>
-                <p className="text-xl">Años de Experiencia</p>
+                <p className="text-xl relative">Años de Experiencia</p>
               </div>
             </div>
           </div>
@@ -1315,7 +1342,7 @@ export default function LeyDelMonoPage() {
 
         {/* Nueva sección: Nuestra Sucursal */}
         <section id="contacto" className="py-20">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4" data-aos="zoom-in">
             <h2 className="text-4xl font-bold text-center text-blue-800 mb-12">
               Nuestra Sucursal
             </h2>
