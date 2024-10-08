@@ -781,7 +781,7 @@ export default function LeyDelMonoPage() {
         {/* Formulario de Cotización */}
         <Card className="w-full max-w-4xl mx-auto" data-aos="zoom-in">
           <CardHeader id="cotiza" className="scroll-mt-20 py-18">
-            <CardTitle className="text-3xl font-semibold mb-6 text-blue-800 dark:text-blue-300 text-center">
+            <CardTitle className="text-4xl font-bold mb-6 text-blue-800 text-center">
               Solicitar Cotización
             </CardTitle>
           </CardHeader>
