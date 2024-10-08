@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Calculator,
   Home,
@@ -61,14 +61,34 @@ import { useInView } from "react-intersection-observer";
 import Image from "next/image";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
+import { useToast } from "@/hooks/use-toast";
 
 const libraries: "places"[] = ["places"];
 
 export default function LeyDelMonoPage() {
+  const initialFormData = {
+    nombre: "",
+    email: "",
+    telefono: "",
+    direccion: "",
+    largo: "",
+    ancho: "",
+    pisos: "1",
+    anoConstruccion: "",
+    superficieConstruida: "",
+    avaluoFiscal: "",
+    tipoPropiedad: "vivienda",
+    subsidio27F: false,
+  };
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     libraries: libraries,
   });
+
+  const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
+  const [solicitudEnviada, setSolicitudEnviada] = useState(false);
+
+  const { toast } = useToast();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
@@ -176,13 +196,17 @@ export default function LeyDelMonoPage() {
     }));
   };
 
-  const calcularAreaTerreno = () => {
+  // Definición de calcularAreaTerreno con useCallback
+  const calcularAreaTerreno = useCallback(() => {
     const largo = parseFloat(formData.largo);
     const ancho = parseFloat(formData.ancho);
-    return isNaN(largo) || isNaN(ancho) ? 0 : largo * ancho;
-  };
+    if (!isNaN(largo) && !isNaN(ancho)) {
+      return largo * ancho;
+    }
+    return 0;
+  }, [formData.largo, formData.ancho]);
 
-  const validarFormulario = () => {
+  const validarFormulario = useCallback(() => {
     const newErrors: { [key: string]: string } = {};
     if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
     if (!formData.email) newErrors.email = "El email es requerido";
@@ -196,11 +220,13 @@ export default function LeyDelMonoPage() {
       newErrors.superficieConstruida = "La superficie construida es requerida";
     if (!formData.avaluoFiscal)
       newErrors.avaluoFiscal = "El avalúo fiscal es requerido";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
-  const calcularCotizacion = () => {
+  // Función para calcular el precio con useCallback
+  const calcularPrecio = useCallback(() => {
     if (validarFormulario()) {
       const area = calcularAreaTerreno();
       const pisos = parseInt(formData.pisos);
@@ -255,6 +281,71 @@ export default function LeyDelMonoPage() {
 
       setCotizacion(Math.round(costoBase));
       setShowCotizacion(true);
+    }
+  }, [formData, validarFormulario, calcularAreaTerreno]); // Agrega `validarFormulario` a las dependencias
+
+  useEffect(() => {
+    // Verificar que todos los campos necesarios estén completos antes de calcular el precio
+    if (
+      formData.nombre &&
+      formData.email &&
+      formData.telefono &&
+      formData.direccion &&
+      formData.pisos &&
+      formData.anoConstruccion &&
+      formData.superficieConstruida &&
+      formData.avaluoFiscal &&
+      validarFormulario()
+    ) {
+      calcularPrecio();
+    }
+  }, [formData, calcularPrecio, validarFormulario]);
+
+  const resetForm = () => {
+    setFormData(initialFormData);
+    setCotizacion(0);
+    setCumpleRequisitos(false);
+    setSolicitudEnviada(false);
+    setCurrentStep(0); // Vuelve al primer paso
+  };
+
+  // Función para enviar la solicitud por correo electrónico
+  const enviarSolicitud = async () => {
+    setEnviandoSolicitud(true);
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          cotizacion,
+          area: calcularAreaTerreno(),
+        }),
+      });
+
+      if (response.ok) {
+        setSolicitudEnviada(true);
+        toast({
+          title: "Solicitud enviada",
+          description:
+            "Tu solicitud está en progreso. Te responderemos a la brevedad.",
+        });
+        resetForm(); // Reset the form after successful submission
+      } else {
+        throw new Error("Error al enviar la solicitud");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Error",
+        description:
+          "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo más tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setEnviandoSolicitud(false);
     }
   };
 
@@ -1167,6 +1258,23 @@ export default function LeyDelMonoPage() {
                     </CardContent>
                   </Card>
                 )}
+
+                {solicitudEnviada ? (
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="text-blue-500" />
+                        <h4 className="text-lg font-semibold text-blue-700">
+                          Solicitud Enviada
+                        </h4>
+                      </div>
+                      <p className="mt-2 text-blue-600">
+                        Tu solicitud está en progreso. Te responderemos a la
+                        brevedad.
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : null}
               </div>
             )}
 
@@ -1186,12 +1294,13 @@ export default function LeyDelMonoPage() {
                   Siguiente
                 </Button>
               ) : (
+                // Solo este botón para enviar la solicitud queda presente
                 <Button
-                  onClick={calcularCotizacion}
-                  disabled={!cumpleRequisitos}
+                  onClick={enviarSolicitud}
+                  disabled={!cumpleRequisitos || enviandoSolicitud}
                   className="bg-green-600 text-white"
                 >
-                  Solicitar Cotización
+                  {enviandoSolicitud ? "Enviando..." : "Solicitar Cotización"}
                 </Button>
               )}
             </div>
