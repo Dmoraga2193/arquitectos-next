@@ -80,7 +80,7 @@ export default function EmailTemplate(formData: any) {
           </Section>
           <Section style={footer}>
             <Text style={footerText}>
-              © 2023 Arquitectos Next Web. Todos los derechos reservados.
+              © 2024 Arquitectos Next. Todos los derechos reservados.
             </Text>
           </Section>
         </Container>

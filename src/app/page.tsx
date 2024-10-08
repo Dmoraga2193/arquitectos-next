@@ -1420,9 +1420,7 @@ export default function LeyDelMonoPage() {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Arquitectos Next Web
-              </h3>
+              <h3 className="text-lg font-semibold mb-4">Arquitectos Next</h3>
               <p className="text-sm">
                 Expertos en regularización de proyectos bajo la Ley del Mono
               </p>
