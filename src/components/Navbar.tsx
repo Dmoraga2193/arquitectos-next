@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const navItems = [
   { name: "Inicio", href: "#inicio" },
@@ -32,20 +33,28 @@ export default function Navbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-white/80 backdrop-blur-md shadow-md" : "bg-transparent"
+        isScrolled ? "bg-white/80 backdrop-blur-sm shadow-md" : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link
-              href="/"
-              className={cn(
-                "text-2xl font-bold transition-colors duration-300",
-                isScrolled ? "text-primary" : "text-white"
-              )}
-            >
-              Logo
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/assets/images/logo.png"
+                alt="Logo de Arquitectos Next Web"
+                width={40}
+                height={40}
+                className="mr-2"
+              />
+              <span
+                className={cn(
+                  "text-2xl font-bold transition-colors duration-300",
+                  isScrolled ? "text-primary" : "text-white"
+                )}
+              >
+                Arquitectos Next
+              </span>
             </Link>
           </div>
           <div className="hidden md:block">

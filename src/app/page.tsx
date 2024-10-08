@@ -23,8 +23,6 @@ import {
   House,
   MapPin,
   Mail,
-  X,
-  Menu,
 } from "lucide-react";
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 import { Input } from "@/components/ui/input";
@@ -61,7 +59,6 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useInView } from "react-intersection-observer";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import SmoothScroll from "@/components/SmoothScroll";
 import Navbar from "@/components/Navbar";
 
@@ -92,6 +89,19 @@ export default function LeyDelMonoPage() {
   const [cotizacion, setCotizacion] = useState(0);
   const [showCotizacion, setShowCotizacion] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const [metrosCuadrados, setMetrosCuadrados] = useState(0);
+
+  useEffect(() => {
+    const largo = parseFloat(formData.largo);
+    const ancho = parseFloat(formData.ancho);
+    if (!isNaN(largo) && !isNaN(ancho)) {
+      setMetrosCuadrados(largo * ancho);
+    } else {
+      setMetrosCuadrados(0);
+    }
+  }, [formData.largo, formData.ancho]);
+
   const [cumpleRequisitos, setCumpleRequisitos] = useState<boolean | null>(
     null
   );
@@ -439,7 +449,7 @@ export default function LeyDelMonoPage() {
               ayudar a propietarios a legalizar sus construcciones de manera
               eficiente y profesional.
             </p>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex items-start">
                 <CheckSquare className="h-6 w-6 text-blue-600 mr-2 mt-1" />
                 <div>
@@ -498,7 +508,10 @@ export default function LeyDelMonoPage() {
             acuerdo a la Ley del Mono, asegurando que su construcción cumpla con
             todas las normativas vigentes.
           </p>
-          <div className="grid md:grid-cols-3 gap-6 " data-aos="zoom-in-up">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 "
+            data-aos="zoom-in-up"
+          >
             {[
               {
                 title: "Evaluación Inicial",
@@ -543,7 +556,7 @@ export default function LeyDelMonoPage() {
                 Lo que dicen nuestros clientes
               </h2>
               <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                 data-aos="zoom-in-up"
               >
                 {testimonials.map((testimonial, index) => (
@@ -618,7 +631,7 @@ export default function LeyDelMonoPage() {
           className="py-12 bg-blue-900 text-white rounded-lg mb-12"
         >
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
               <div>
                 <h3 className="text-4xl font-bold mb-2" aria-live="polite">
                   {projectsCount}+
@@ -840,6 +853,26 @@ export default function LeyDelMonoPage() {
                     <p className="text-sm text-red-500 mt-1">{errors.ancho}</p>
                   )}
                 </div>
+
+                <div>
+                  <Label htmlFor="metrosCuadrados">
+                    Metros Cuadrados calculados
+                  </Label>
+                  <div className="relative mt-1">
+                    <Ruler
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
+                    <Input
+                      id="metrosCuadrados"
+                      name="metrosCuadrados"
+                      value={metrosCuadrados}
+                      readOnly
+                      className="bg-gray-100 pl-10"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <Label htmlFor="pisos">Número de Pisos</Label>
                   <div className="relative mt-1">
@@ -1017,7 +1050,7 @@ export default function LeyDelMonoPage() {
                   <h3 className="text-lg font-semibold mb-4">
                     Resumen de la cotización
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm text-gray-500">Nombre</p>
                       <p className="font-medium">{formData.nombre}</p>
@@ -1175,7 +1208,7 @@ export default function LeyDelMonoPage() {
           </h2>
           <Card className="mb-6" data-aos="fade-up">
             <CardContent className="p-6">
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                   <h3 className="text-xl font-semibold mb-4 text-blue-800">
                     Información de Contacto
@@ -1231,7 +1264,7 @@ export default function LeyDelMonoPage() {
       {/* Footer */}
       <footer className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-8">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
               <h3 className="text-lg font-semibold mb-4">
                 Arquitectos Next Web
