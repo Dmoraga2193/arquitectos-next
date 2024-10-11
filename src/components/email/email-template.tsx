@@ -1,26 +1,51 @@
 import React from "react";
-import { Html } from "@react-email/html";
-import { Head } from "@react-email/head";
-import { Preview } from "@react-email/preview";
-import { Container } from "@react-email/container";
-import { Section } from "@react-email/section";
-import { Text } from "@react-email/text";
-import { Img } from "@react-email/img";
+import {
+  Html,
+  Head,
+  Preview,
+  Body,
+  Container,
+  Section,
+  Text,
+  Img,
+  Row,
+  Column,
+  Hr,
+} from "@react-email/components";
 
-export default function EmailTemplate(formData: any) {
-  // Asegúrate de que esta URL sea accesible públicamente
+interface PisoData {
+  largo: string;
+  ancho: string;
+}
+
+interface FormData {
+  nombre: string;
+  email: string;
+  telefono: string;
+  direccion: string;
+  numeroPisos: string;
+  pisos: PisoData[];
+  anoConstruccion: string;
+  superficieConstruida: string;
+  avaluoFiscal: string;
+  tipoPropiedad: string;
+  subsidio27F: boolean;
+  cotizacion: number;
+}
+
+export default function EmailTemplate(formData: FormData) {
   const logoUrl = "https://arquitectura-next.vercel.app/assets/images/logo.png";
 
   return (
     <Html>
       <Head />
       <Preview>Nueva Solicitud de Cotización - {formData.nombre}</Preview>
-      <body style={main}>
+      <Body style={main}>
         <Container style={container}>
           <Section style={header}>
             <Img
               src={logoUrl}
-              width="150"
+              width="120"
               height="auto"
               alt="Arquitectos Next Web Logo"
               style={logoStyle}
@@ -34,43 +59,73 @@ export default function EmailTemplate(formData: any) {
               siguientes detalles:
             </Text>
             <Section style={detailsContainer}>
-              <Detail label="Nombre" value={formData.nombre} />
-              <Detail label="Email" value={formData.email} />
-              <Detail label="Dirección" value={formData.direccion} />
-              <Detail label="Teléfono" value={formData.telefono} />
-              <Detail
-                label="Largo del terreno"
-                value={`${formData.largo} metros`}
-              />
-              <Detail
-                label="Ancho del terreno"
-                value={`${formData.ancho} metros`}
-              />
-              <Detail
-                label="Área del terreno"
-                value={`${formData.area} metros cuadrados`}
-              />
-              <Detail label="Número de pisos" value={formData.pisos} />
-              <Detail
-                label="Año de construcción"
-                value={formData.anoConstruccion}
-              />
-              <Detail
-                label="Superficie construida"
-                value={`${formData.superficieConstruida} m²`}
-              />
-              <Detail
-                label="Avalúo fiscal"
-                value={`${formData.avaluoFiscal} UF`}
-              />
-              <Detail
-                label="Tipo de propiedad"
-                value={formData.tipoPropiedad}
-              />
-              <Detail
-                label="Subsidio 27F"
-                value={formData.subsidio27F ? "Sí" : "No"}
-              />
+              <Row style={rowStyle}>
+                <Column style={columnStyle}>
+                  <Detail label="Nombre" value={formData.nombre} />
+                  <Detail label="Email" value={formData.email} />
+                  <Detail label="Teléfono" value={formData.telefono} />
+                </Column>
+                <Column style={columnStyle}>
+                  <Detail label="Dirección" value={formData.direccion} />
+                  <Detail
+                    label="Número de pisos"
+                    value={formData.numeroPisos}
+                  />
+                  <Detail
+                    label="Año de construcción"
+                    value={formData.anoConstruccion}
+                  />
+                </Column>
+              </Row>
+              <Hr style={divider} />
+              <Text style={subheading}>Detalles de los Pisos</Text>
+              {formData.pisos.map((piso, index) => (
+                <Row key={index} style={rowStyle}>
+                  <Column style={columnStyle}>
+                    <Detail
+                      label={`Piso ${index + 1} - Largo`}
+                      value={`${piso.largo} metros`}
+                    />
+                  </Column>
+                  <Column style={columnStyle}>
+                    <Detail
+                      label={`Piso ${index + 1} - Ancho`}
+                      value={`${piso.ancho} metros`}
+                    />
+                  </Column>
+                  <Column style={columnStyle}>
+                    <Detail
+                      label={`Piso ${index + 1} - Área`}
+                      value={`${(
+                        parseFloat(piso.largo) * parseFloat(piso.ancho)
+                      ).toFixed(2)} m²`}
+                    />
+                  </Column>
+                </Row>
+              ))}
+              <Hr style={divider} />
+              <Row style={rowStyle}>
+                <Column style={columnStyle}>
+                  <Detail
+                    label="Superficie construida total"
+                    value={`${formData.superficieConstruida} m²`}
+                  />
+                  <Detail
+                    label="Avalúo fiscal"
+                    value={`${formData.avaluoFiscal} UF`}
+                  />
+                </Column>
+                <Column style={columnStyle}>
+                  <Detail
+                    label="Tipo de propiedad"
+                    value={formData.tipoPropiedad}
+                  />
+                  <Detail
+                    label="Subsidio 27F"
+                    value={formData.subsidio27F ? "Sí" : "No"}
+                  />
+                </Column>
+              </Row>
             </Section>
             <Section style={quoteSection}>
               <Text style={quoteText}>
@@ -84,7 +139,7 @@ export default function EmailTemplate(formData: any) {
             </Text>
           </Section>
         </Container>
-      </body>
+      </Body>
     </Html>
   );
 }
@@ -99,26 +154,30 @@ function Detail({ label, value }: { label: string; value: string }) {
 
 const main = {
   backgroundColor: "#f0f4f8",
-  fontFamily: "Arial, sans-serif",
+  fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
 };
 
 const container = {
   margin: "0 auto",
   padding: "20px 0 48px",
+  width: "100%",
   maxWidth: "600px",
 };
 
 const header = {
   backgroundColor: "#1e3a8a",
-  padding: "40px 24px",
+  padding: "30px 24px",
   textAlign: "center" as const,
+  borderRadius: "8px 8px 0 0",
 };
 
 const headerTitle = {
   color: "#fbbf24",
-  fontSize: "28px",
+  fontSize: "24px",
   fontWeight: "bold",
-  margin: "20px 0 0",
+  margin: "16px 0 0",
+  textTransform: "uppercase" as const,
+  letterSpacing: "1px",
 };
 
 const logoStyle = {
@@ -128,8 +187,7 @@ const logoStyle = {
 const content = {
   backgroundColor: "#ffffff",
   padding: "32px 24px",
-  borderRadius: "8px",
-  marginTop: "24px",
+  borderRadius: "0 0 8px 8px",
 };
 
 const heading = {
@@ -138,6 +196,8 @@ const heading = {
   color: "#1e3a8a",
   marginBottom: "24px",
   textAlign: "center" as const,
+  borderBottom: "2px solid #e2e8f0",
+  paddingBottom: "16px",
 };
 
 const paragraph = {
@@ -150,9 +210,19 @@ const detailsContainer = {
   margin: "24px 0",
 };
 
+const rowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "16px",
+};
+
+const columnStyle = {
+  flexBasis: "48%",
+};
+
 const detailRow = {
   fontSize: "14px",
-  lineHeight: "24px",
+  lineHeight: "20px",
   color: "#4a5568",
   marginBottom: "8px",
 };
@@ -162,15 +232,28 @@ const detailLabel = {
   color: "#2d3748",
 };
 
+const divider = {
+  borderTop: "1px solid #e2e8f0",
+  margin: "16px 0",
+};
+
+const subheading = {
+  fontSize: "18px",
+  fontWeight: "bold",
+  color: "#2d3748",
+  marginBottom: "16px",
+};
+
 const quoteSection = {
   backgroundColor: "#edf2f7",
   padding: "24px",
   borderRadius: "8px",
   marginTop: "32px",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 };
 
 const quoteText = {
-  fontSize: "18px",
+  fontSize: "20px",
   fontWeight: "bold",
   color: "#1e3a8a",
   textAlign: "center" as const,
