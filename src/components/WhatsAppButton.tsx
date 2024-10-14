@@ -27,11 +27,11 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`fixed right-4 bottom-20 z-50 flex items-center bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 ${
-        isHovered ? "pr-4" : ""
+        isHovered ? "pr-4 pl-1" : "p-1"
       }`}
       aria-label="Contactar por WhatsApp"
     >
-      <span className="p-3 rounded-full">
+      <span className={`p-2 rounded-full ${isHovered ? "animate-pulse" : ""}`}>
         <Phone size={24} />
       </span>
       <span
@@ -40,6 +40,13 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
         }`}
       >
         Comunicate por WhatsApp
+      </span>
+      <span
+        className={`absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transition-all duration-300 ${
+          isHovered ? "opacity-100 scale-100" : "opacity-0 scale-0"
+        }`}
+      >
+        1
       </span>
     </button>
   );
