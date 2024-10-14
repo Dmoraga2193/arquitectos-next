@@ -10,7 +10,6 @@ import {
   Calculator,
   Calendar,
   CheckCircle,
-  DollarSign,
   Home,
   House,
   LandPlot,
@@ -388,7 +387,8 @@ export default function Cotizacion() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        // Eliminamos la asignación de 'data' ya que no la estamos utilizando
+        await response.json(); // Consumimos la respuesta para evitar advertencias
         setSolicitudEnviada(true);
         setToastProps({
           title: "Solicitud enviada",
@@ -407,8 +407,9 @@ export default function Cotizacion() {
       setToastProps({
         title: "Error",
         description:
-          error.message ||
-          "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo más tarde.",
+          error instanceof Error
+            ? error.message
+            : "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo más tarde.",
         type: "error",
       });
       setShowToast(true);
