@@ -27,10 +27,11 @@ interface FormData {
   pisos: PisoData[];
   anoConstruccion: string;
   superficieConstruida: string;
-  avaluoFiscal: string;
   tipoPropiedad: string;
   subsidio27F: boolean;
   cotizacion: number;
+  cumpleRequisitos: boolean;
+  requisitosIncumplidos: string[];
 }
 
 export default function EmailTemplate(formData: FormData) {
@@ -43,14 +44,23 @@ export default function EmailTemplate(formData: FormData) {
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Img
-              src={logoUrl}
-              width="120"
-              height="auto"
-              alt="Arquitectos Next Web Logo"
-              style={logoStyle}
-            />
-            <Text style={headerTitle}>Regularización Sin Complicaciones</Text>
+            <Row>
+              <Column style={logoColumn}>
+                <Img
+                  src={logoUrl}
+                  width="120"
+                  height="120"
+                  alt="Arquitectos Next Web Logo"
+                  style={logoStyle}
+                />
+              </Column>
+              <Column style={titleColumn}>
+                <Text style={headerTitle}>Arquitectos Next</Text>
+                <Text style={headerSubtitle}>
+                  Regularización Sin Complicaciones
+                </Text>
+              </Column>
+            </Row>
           </Section>
           <Section style={content}>
             <Text style={heading}>Nueva Solicitud de Cotización</Text>
@@ -61,19 +71,29 @@ export default function EmailTemplate(formData: FormData) {
             <Section style={detailsContainer}>
               <Row style={rowStyle}>
                 <Column style={columnStyle}>
-                  <Detail label="Nombre" value={formData.nombre} />
-                  <Detail label="Email" value={formData.email} />
-                  <Detail label="Teléfono" value={formData.telefono} />
+                  <Detail label="Nombre" value={formData.nombre} icon="👤" />
+                  <Detail label="Email" value={formData.email} icon="✉️" />
+                  <Detail
+                    label="Teléfono"
+                    value={formData.telefono}
+                    icon="📞"
+                  />
                 </Column>
                 <Column style={columnStyle}>
-                  <Detail label="Dirección" value={formData.direccion} />
+                  <Detail
+                    label="Dirección"
+                    value={formData.direccion}
+                    icon="🏠"
+                  />
                   <Detail
                     label="Número de pisos"
                     value={formData.numeroPisos}
+                    icon="🏢"
                   />
                   <Detail
                     label="Año de construcción"
                     value={formData.anoConstruccion}
+                    icon="🗓️"
                   />
                 </Column>
               </Row>
@@ -85,12 +105,14 @@ export default function EmailTemplate(formData: FormData) {
                     <Detail
                       label={`Piso ${index + 1} - Largo`}
                       value={`${piso.largo} metros`}
+                      icon="↔️"
                     />
                   </Column>
                   <Column style={columnStyle}>
                     <Detail
                       label={`Piso ${index + 1} - Ancho`}
                       value={`${piso.ancho} metros`}
+                      icon="↕️"
                     />
                   </Column>
                   <Column style={columnStyle}>
@@ -99,6 +121,7 @@ export default function EmailTemplate(formData: FormData) {
                       value={`${(
                         parseFloat(piso.largo) * parseFloat(piso.ancho)
                       ).toFixed(2)} m²`}
+                      icon="📐"
                     />
                   </Column>
                 </Row>
@@ -109,23 +132,54 @@ export default function EmailTemplate(formData: FormData) {
                   <Detail
                     label="Superficie construida total"
                     value={`${formData.superficieConstruida} m²`}
-                  />
-                  <Detail
-                    label="Avalúo fiscal"
-                    value={`${formData.avaluoFiscal} UF`}
+                    icon="🏗️"
                   />
                 </Column>
                 <Column style={columnStyle}>
                   <Detail
                     label="Tipo de propiedad"
                     value={formData.tipoPropiedad}
+                    icon="🏘️"
                   />
                   <Detail
                     label="Subsidio 27F"
                     value={formData.subsidio27F ? "Sí" : "No"}
+                    icon="🏛️"
                   />
                 </Column>
               </Row>
+            </Section>
+            <Section style={leyDelMonoSection}>
+              <Text style={leyDelMonoTitle}>
+                {formData.cumpleRequisitos ? (
+                  <>
+                    <span style={iconStyle}>✅</span> Cumple con los requisitos
+                    de la Ley del Mono
+                  </>
+                ) : (
+                  <>
+                    <span style={iconStyle}>❌</span> No cumple con los
+                    requisitos de la Ley del Mono
+                  </>
+                )}
+              </Text>
+              {!formData.cumpleRequisitos &&
+                formData.requisitosIncumplidos.length > 0 && (
+                  <>
+                    <Text style={leyDelMonoSubtitle}>
+                      Requisitos incumplidos:
+                    </Text>
+                    <ul style={leyDelMonoList}>
+                      {formData.requisitosIncumplidos.map(
+                        (requisito, index) => (
+                          <li key={index} style={leyDelMonoListItem}>
+                            {requisito}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </>
+                )}
             </Section>
             <Section style={quoteSection}>
               <Text style={quoteText}>
@@ -144,54 +198,80 @@ export default function EmailTemplate(formData: FormData) {
   );
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+function Detail({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+}) {
   return (
     <Text style={detailRow}>
+      <span style={iconStyle}>{icon}</span>
       <span style={detailLabel}>{label}:</span> {value}
     </Text>
   );
 }
 
 const main = {
-  backgroundColor: "#f0f4f8",
+  backgroundColor: "#f6f9fc",
   fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
 };
 
 const container = {
   margin: "0 auto",
   padding: "20px 0 48px",
-  width: "100%",
-  maxWidth: "600px",
 };
 
 const header = {
   backgroundColor: "#1e3a8a",
-  padding: "30px 24px",
-  textAlign: "center" as const,
+  padding: "36px",
   borderRadius: "8px 8px 0 0",
+  marginBottom: "48px",
 };
 
-const headerTitle = {
-  color: "#fbbf24",
-  fontSize: "24px",
-  fontWeight: "bold",
-  margin: "16px 0 0",
-  textTransform: "uppercase" as const,
-  letterSpacing: "1px",
+const logoColumn = {
+  width: "25%",
+  textAlign: "center" as const,
+};
+
+const titleColumn = {
+  width: "75%",
+  paddingLeft: "24px",
 };
 
 const logoStyle = {
   margin: "0 auto",
 };
 
+const headerTitle = {
+  color: "#ffffff",
+  fontSize: "32px",
+  fontWeight: "bold",
+  margin: "0 0 8px",
+  lineHeight: "1.2",
+};
+
+const headerSubtitle = {
+  color: "#fbbf24",
+  fontSize: "18px",
+  fontWeight: "500",
+  margin: "0",
+  textTransform: "uppercase" as const,
+  letterSpacing: "1px",
+};
+
 const content = {
   backgroundColor: "#ffffff",
   padding: "32px 24px",
   borderRadius: "0 0 8px 8px",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 };
 
 const heading = {
-  fontSize: "24px",
+  fontSize: "28px",
   fontWeight: "bold",
   color: "#1e3a8a",
   marginBottom: "24px",
@@ -208,6 +288,9 @@ const paragraph = {
 
 const detailsContainer = {
   margin: "24px 0",
+  backgroundColor: "#f8fafc",
+  padding: "24px",
+  borderRadius: "8px",
 };
 
 const rowStyle = {
@@ -224,28 +307,71 @@ const detailRow = {
   fontSize: "14px",
   lineHeight: "20px",
   color: "#4a5568",
-  marginBottom: "8px",
+  marginBottom: "12px",
+  display: "flex",
+  alignItems: "center",
 };
 
 const detailLabel = {
   fontWeight: "bold",
   color: "#2d3748",
+  marginRight: "8px",
+};
+
+const iconStyle = {
+  marginRight: "8px",
+  fontSize: "18px",
 };
 
 const divider = {
   borderTop: "1px solid #e2e8f0",
-  margin: "16px 0",
+  margin: "24px 0",
 };
 
 const subheading = {
-  fontSize: "18px",
+  fontSize: "20px",
   fontWeight: "bold",
   color: "#2d3748",
   marginBottom: "16px",
+  textAlign: "center" as const,
+};
+
+const leyDelMonoSection = {
+  background: "linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%)",
+  padding: "24px",
+  borderRadius: "8px",
+  marginTop: "32px",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+};
+
+const leyDelMonoTitle = {
+  fontSize: "20px",
+  fontWeight: "bold",
+  color: "#2f855a",
+  marginBottom: "16px",
+  textAlign: "center" as const,
+};
+
+const leyDelMonoSubtitle = {
+  fontSize: "16px",
+  fontWeight: "bold",
+  color: "#2f855a",
+  marginBottom: "8px",
+};
+
+const leyDelMonoList = {
+  margin: "0",
+  padding: "0 0 0 20px",
+};
+
+const leyDelMonoListItem = {
+  fontSize: "14px",
+  color: "#4a5568",
+  marginBottom: "4px",
 };
 
 const quoteSection = {
-  backgroundColor: "#edf2f7",
+  background: "linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)",
   padding: "24px",
   borderRadius: "8px",
   marginTop: "32px",
@@ -253,10 +379,11 @@ const quoteSection = {
 };
 
 const quoteText = {
-  fontSize: "20px",
+  fontSize: "24px",
   fontWeight: "bold",
   color: "#1e3a8a",
   textAlign: "center" as const,
+  textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
 };
 
 const footer = {

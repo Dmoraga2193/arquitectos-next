@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import {
   AlertTriangle,
   AtSign,
+  Building2,
   Calculator,
   Calendar,
   CheckCircle,
@@ -13,6 +14,8 @@ import {
   Home,
   House,
   LandPlot,
+  Layers,
+  Mail,
   Phone,
   Ruler,
   SquareStack,
@@ -37,6 +40,7 @@ import {
 import { Separator } from "./ui/separator";
 import { AnimatedStepper } from "./ui/AnimatedStepper";
 import Toast from "./ui/ToastMejorado";
+import { Badge } from "./ui/badge";
 
 export default function Cotizacion() {
   const initialFormData = {
@@ -48,7 +52,7 @@ export default function Cotizacion() {
     pisos: [{ largo: "", ancho: "" }],
     anoConstruccion: "",
     superficieConstruida: "",
-    avaluoFiscal: "",
+
     tipoPropiedad: "vivienda",
     subsidio27F: false,
   };
@@ -64,7 +68,7 @@ export default function Cotizacion() {
     pisos: [{ largo: "", ancho: "" }],
     anoConstruccion: "",
     superficieConstruida: "",
-    avaluoFiscal: "",
+
     tipoPropiedad: "vivienda",
     subsidio27F: false,
   });
@@ -86,6 +90,16 @@ export default function Cotizacion() {
       return !isNaN(largo) && !isNaN(ancho) ? largo * ancho : 0;
     });
     setMetrosCuadrados(newMetrosCuadrados);
+
+    // Calcular la superficie construida total
+    const superficieTotal = newMetrosCuadrados.reduce(
+      (total, area) => total + area,
+      0
+    );
+    setFormData((prevState) => ({
+      ...prevState,
+      superficieConstruida: superficieTotal.toFixed(2),
+    }));
   }, [formData.pisos]);
 
   const renderPisoInputs = () => {
@@ -262,10 +276,6 @@ export default function Cotizacion() {
     if (!formData.direccion) newErrors.direccion = "La dirección es requerida";
     if (!formData.anoConstruccion)
       newErrors.anoConstruccion = "El año de construcción es requerido";
-    if (!formData.superficieConstruida)
-      newErrors.superficieConstruida = "La superficie construida es requerida";
-    if (!formData.avaluoFiscal)
-      newErrors.avaluoFiscal = "El avalúo fiscal es requerido";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -276,7 +286,7 @@ export default function Cotizacion() {
     if (validarFormulario()) {
       let costoBase = 500000; // Costo base en pesos chilenos
       const superficieConstruida = parseFloat(formData.superficieConstruida);
-      const avaluoFiscal = parseFloat(formData.avaluoFiscal);
+
       const anoConstruccion = parseInt(formData.anoConstruccion);
       const numPisos = parseInt(formData.numeroPisos);
 
@@ -298,9 +308,9 @@ export default function Cotizacion() {
 
       // Ajuste por tipo de propiedad y superficie
       if (formData.tipoPropiedad === "vivienda") {
-        if (superficieConstruida <= 90 && avaluoFiscal <= 1000) {
+        if (superficieConstruida <= 90) {
           costoBase *= 0.9;
-        } else if (superficieConstruida <= 140 && avaluoFiscal <= 2000) {
+        } else if (superficieConstruida <= 140) {
           costoBase *= 1.1;
         } else {
           costoBase *= 1.3;
@@ -312,7 +322,7 @@ export default function Cotizacion() {
           costoBase *= 2;
         }
       } else if (formData.tipoPropiedad === "equipamientoSocial") {
-        if (superficieConstruida <= 90 && avaluoFiscal <= 1000) {
+        if (superficieConstruida <= 90) {
           costoBase *= 0.8;
         } else {
           costoBase *= 1.2;
@@ -338,8 +348,6 @@ export default function Cotizacion() {
       formData.direccion &&
       formData.pisos &&
       formData.anoConstruccion &&
-      formData.superficieConstruida &&
-      formData.avaluoFiscal &&
       validarFormulario()
     ) {
       calcularPrecio();
@@ -367,6 +375,8 @@ export default function Cotizacion() {
           ...piso,
           area: parseFloat(piso.largo) * parseFloat(piso.ancho),
         })),
+        requisitosIncumplidos,
+        cumpleRequisitos: requisitosIncumplidos.length === 0,
       };
 
       const response = await fetch("/api/send-email", {
@@ -378,6 +388,7 @@ export default function Cotizacion() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         setSolicitudEnviada(true);
         setToastProps({
           title: "Solicitud enviada",
@@ -388,13 +399,15 @@ export default function Cotizacion() {
         setShowToast(true);
         resetForm();
       } else {
-        throw new Error("Error al enviar la solicitud");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al enviar la solicitud");
       }
     } catch (error) {
       console.error("Error:", error);
       setToastProps({
         title: "Error",
         description:
+          error.message ||
           "Hubo un problema al enviar tu solicitud. Por favor, intenta de nuevo más tarde.",
         type: "error",
       });
@@ -406,15 +419,12 @@ export default function Cotizacion() {
 
   useEffect(() => {
     const superficieConstruida = parseFloat(formData.superficieConstruida);
-    const avaluoFiscal = parseFloat(formData.avaluoFiscal);
+
     const anoConstruccion = parseInt(formData.anoConstruccion);
     const incumplidos = [];
 
     if (superficieConstruida > 140) {
       incumplidos.push("La superficie construida supera los 140 m²");
-    }
-    if (avaluoFiscal > 2000) {
-      incumplidos.push("El avalúo fiscal supera las 2.000 UF");
     }
     if (anoConstruccion >= 2016) {
       incumplidos.push("La construcción es posterior al 4 de febrero de 2016");
@@ -422,11 +432,7 @@ export default function Cotizacion() {
 
     setRequisitosIncumplidos(incumplidos);
     setCumpleRequisitos(incumplidos.length === 0);
-  }, [
-    formData.superficieConstruida,
-    formData.avaluoFiscal,
-    formData.anoConstruccion,
-  ]);
+  }, [formData.superficieConstruida, formData.anoConstruccion]);
 
   const validarPaso = (paso: number) => {
     const newErrors: { [key: string]: string } = {};
@@ -485,8 +491,6 @@ export default function Cotizacion() {
         if (!formData.superficieConstruida)
           newErrors.superficieConstruida =
             "La superficie construida es requerida";
-        if (!formData.avaluoFiscal)
-          newErrors.avaluoFiscal = "El avalúo fiscal es requerido";
         break;
     }
     setErrors(newErrors);
@@ -691,38 +695,14 @@ export default function Cotizacion() {
                   type="number"
                   className="pl-10"
                   value={formData.superficieConstruida}
-                  onChange={handleInputChange}
-                  placeholder="Ingrese la superficie construida"
+                  readOnly
+                  placeholder="Calculado automáticamente"
                 />
               </div>
 
               {errors.superficieConstruida && (
                 <p className="text-sm text-red-500 mt-1">
                   {errors.superficieConstruida}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="avaluoFiscal">Avalúo fiscal (UF)</Label>
-              <div className="relative mt-1">
-                <DollarSign
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <Input
-                  id="avaluoFiscal"
-                  name="avaluoFiscal"
-                  type="number"
-                  className="pl-10"
-                  value={formData.avaluoFiscal}
-                  onChange={handleInputChange}
-                  placeholder="Ingrese el avalúo fiscal. Ej: 1000"
-                />
-              </div>
-
-              {errors.avaluoFiscal && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.avaluoFiscal}
                 </p>
               )}
             </div>
@@ -791,73 +771,139 @@ export default function Cotizacion() {
 
         {currentStep === 3 && (
           <div className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">
-                Resumen de la cotización
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Nombre</p>
-                  <p className="font-medium">{formData.nombre}</p>
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-primary">
+                  Resumen de la cotización
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Nombre
+                        </p>
+                        <p className="font-semibold">{formData.nombre}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Mail className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Email
+                        </p>
+                        <p className="font-semibold">{formData.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Phone className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Teléfono
+                        </p>
+                        <p className="font-semibold">{formData.telefono}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Home className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Dirección
+                        </p>
+                        <p className="font-semibold">{formData.direccion}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <LandPlot className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Superficie total construida
+                        </p>
+                        <p className="font-semibold">
+                          {formData.superficieConstruida} m²
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Año de construcción
+                        </p>
+                        <p className="font-semibold">
+                          {formData.anoConstruccion}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Building2 className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Tipo de propiedad
+                        </p>
+                        <p className="font-semibold">
+                          {formData.tipoPropiedad}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">
+                          Subsidio 27F
+                        </p>
+                        <Badge
+                          variant={
+                            formData.subsidio27F ? "default" : "secondary"
+                          }
+                        >
+                          {formData.subsidio27F ? "Sí" : "No"}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                <Separator />
                 <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium">{formData.email}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Teléfono</p>
-                  <p className="font-medium">{formData.telefono}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Dirección</p>
-                  <p className="font-medium">{formData.direccion}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Superficie total construida
-                  </p>
-                  <p className="font-medium">
-                    {formData.superficieConstruida} m²
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Año de construcción</p>
-                  <p className="font-medium">{formData.anoConstruccion}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-500">Avalúo fiscal</p>
-                  <p className="font-medium">{formData.avaluoFiscal} UF</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Tipo de propiedad</p>
-                  <p className="font-medium">{formData.tipoPropiedad}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Subsidio 27F</p>
-                  <p className="font-medium">
-                    {formData.subsidio27F ? "Sí" : "No"}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-lg font-semibold mt-4 mb-2">
+                  <h4 className="text-lg font-semibold mb-4 flex items-center">
+                    <Layers className="w-5 h-5 mr-2 text-primary" />
                     Detalles por piso
                   </h4>
-                  {formData.pisos.map((piso, index) => (
-                    <div key={index} className="mb-2">
-                      <p className="font-medium">Piso {index + 1}</p>
-                      <p>
-                        Largo: {piso.largo}m, Ancho: {piso.ancho}m
-                      </p>
-                      <p>
-                        Área: {metrosCuadrados[index]?.toFixed(2) || "0.00"} m²
-                      </p>
-                    </div>
-                  ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {formData.pisos.map((piso, index) => (
+                      <Card key={index} className="bg-secondary/10">
+                        <CardHeader>
+                          <CardTitle className="text-md">
+                            Piso {index + 1}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-muted-foreground">
+                            Largo:{" "}
+                            <span className="font-semibold">{piso.largo}m</span>
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Ancho:{" "}
+                            <span className="font-semibold">{piso.ancho}m</span>
+                          </p>
+                          <p className="text-sm font-medium mt-2">
+                            Área:{" "}
+                            <span className="font-semibold">
+                              {metrosCuadrados[index]?.toFixed(2) || "0.00"} m²
+                            </span>
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {cumpleRequisitos ? (
               <Card className="bg-green-50 border-green-200">
@@ -954,7 +1000,6 @@ export default function Cotizacion() {
             // Solo este botón para enviar la solicitud queda presente
             <Button
               onClick={enviarSolicitud}
-              disabled={!cumpleRequisitos || enviandoSolicitud}
               className="bg-green-600 text-white"
             >
               {enviandoSolicitud ? "Enviando..." : "Solicitar Cotización"}
