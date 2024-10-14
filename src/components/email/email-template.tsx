@@ -32,6 +32,7 @@ interface FormData {
   cotizacion: number;
   cumpleRequisitos: boolean;
   requisitosIncumplidos: string[];
+  comentarios: string; // New field for comments
 }
 
 export default function EmailTemplate(formData: FormData) {
@@ -180,6 +181,12 @@ export default function EmailTemplate(formData: FormData) {
                     </ul>
                   </>
                 )}
+              {formData.comentarios && (
+                <Section style={commentSection}>
+                  <Text style={commentTitle}>Comentarios Adicionales:</Text>
+                  <Text style={commentText}>{formData.comentarios}</Text>
+                </Section>
+              )}
             </Section>
             <Section style={quoteSection}>
               <Text style={quoteText}>
@@ -369,7 +376,26 @@ const leyDelMonoListItem = {
   color: "#4a5568",
   marginBottom: "4px",
 };
+const commentSection = {
+  background: "linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%)",
+  padding: "24px",
+  borderRadius: "8px",
+  marginTop: "32px",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+};
 
+const commentTitle = {
+  fontSize: "18px",
+  fontWeight: "bold",
+  color: "#2c7a7b",
+  marginBottom: "12px",
+};
+
+const commentText = {
+  fontSize: "14px",
+  lineHeight: "1.5",
+  color: "#4a5568",
+};
 const quoteSection = {
   background: "linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%)",
   padding: "24px",

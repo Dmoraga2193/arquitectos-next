@@ -19,6 +19,7 @@ interface FormData {
   cotizacion: number;
   cumpleRequisitos: boolean;
   requisitosIncumplidos: string[];
+  comentarios: string;
 }
 
 export async function POST(request: NextRequest) {

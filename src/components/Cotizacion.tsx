@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertTriangle,
   AtSign,
@@ -15,6 +16,7 @@ import {
   LandPlot,
   Layers,
   Mail,
+  MessageSquare,
   Phone,
   Ruler,
   SquareStack,
@@ -51,9 +53,9 @@ export default function Cotizacion() {
     pisos: [{ largo: "", ancho: "" }],
     anoConstruccion: "",
     superficieConstruida: "",
-
     tipoPropiedad: "vivienda",
     subsidio27F: false,
+    comentarios: "", // Nuevo campo para comentarios adicionales
   };
   const [enviandoSolicitud, setEnviandoSolicitud] = useState(false);
   const [solicitudEnviada, setSolicitudEnviada] = useState(false);
@@ -67,9 +69,9 @@ export default function Cotizacion() {
     pisos: [{ largo: "", ancho: "" }],
     anoConstruccion: "",
     superficieConstruida: "",
-
     tipoPropiedad: "vivienda",
     subsidio27F: false,
+    comentarios: "", // Nuevo campo para comentarios adicionales
   });
   const [cotizacion, setCotizacion] = useState(0);
   const [showCotizacion, setShowCotizacion] = useState(false);
@@ -200,7 +202,7 @@ export default function Cotizacion() {
   };
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       const newErrors = { ...errors };
 
@@ -223,6 +225,9 @@ export default function Cotizacion() {
         if (newErrors[name] && formattedValue) {
           delete newErrors[name];
         }
+      } else if (name === "comentarios") {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        // No necesitamos validación para comentarios ya que es opcional
       } else {
         setFormData((prev) => ({ ...prev, [name]: value }));
 
@@ -736,6 +741,19 @@ export default function Cotizacion() {
                 </Select>
               </div>
             </div>
+            <div>
+              <Label htmlFor="comentarios">
+                Comentarios adicionales (opcional)
+              </Label>
+              <Textarea
+                id="comentarios"
+                name="comentarios"
+                placeholder="Ingrese cualquier comentario o información adicional aquí"
+                value={formData.comentarios}
+                onChange={handleInputChange}
+                className="mt-1"
+              />
+            </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="subsidio27F"
@@ -903,6 +921,18 @@ export default function Cotizacion() {
                     ))}
                   </div>
                 </div>
+                <Separator />
+                {formData.comentarios && (
+                  <div className="flex items-center space-x-2">
+                    <MessageSquare className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Comentarios adicionales
+                      </p>
+                      <p className="font-semibold">{formData.comentarios}</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
