@@ -46,8 +46,8 @@ export default function Faq() {
     <section id="faq" className="mb-12 scroll-mt-20">
       <div className="max-w-4xl mx-auto p-4">
         <h2
-          className="text-4xl font-bold mb-6 text-acento dark:text-blue-300 text-center"
-          data-aos="flip-up"
+          className="text-4xl font-bold mb-6 text-acento text-center text-shadow shadow-primario/20"
+          data-aos="zoom-in"
         >
           Preguntas Frecuentes
         </h2>

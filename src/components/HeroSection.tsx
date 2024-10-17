@@ -71,10 +71,10 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-2xl"
           >
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-acento drop-shadow-lg">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-acento drop-shadow-lg text-shadow shadow-primario/60">
               Regularización sin complicaciones
             </h1>
-            <p className="text-xl md:text-2xl font-semibold text-white drop-shadow-md mb-8">
+            <p className="text-xl md:text-2xl font-semibold text-white drop-shadow-md mb-8 text-shadow shadow-primario/60">
               Navegamos por ti la Ley del Mono. Asegura el futuro de tu
               propiedad con nuestro equipo de arquitectos especializados.
             </p>

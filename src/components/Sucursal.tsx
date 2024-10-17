@@ -5,7 +5,7 @@ export default function Sucursal() {
   return (
     <section id="contacto" className="py-20">
       <div className="container mx-auto px-4" data-aos="zoom-in">
-        <h2 className="text-4xl font-bold text-center text-acento mb-12">
+        <h2 className="text-4xl font-bold mb-12 text-acento text-center text-shadow shadow-primario/20">
           Nuestra Sucursal
         </h2>
         <Card className="overflow-hidden shadow-lg">

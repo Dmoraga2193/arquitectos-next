@@ -518,9 +518,9 @@ export default function Cotizacion() {
     <section id="cotiza">
       <Card className="w-full max-w-4xl mx-auto" data-aos="zoom-in">
         <CardHeader className="scroll-mt-20 py-18">
-          <CardTitle className="text-4xl font-bold mb-6 text-acento text-center">
+          <h2 className="text-4xl font-bold mb-6 text-center text-acento text-shadow shadow-primario/20">
             Solicitar Cotización
-          </CardTitle>
+          </h2>
         </CardHeader>
         <CardContent>
           <AnimatedStepper steps={steps} currentStep={currentStep} />

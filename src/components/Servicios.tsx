@@ -24,7 +24,7 @@ export default function Servicios() {
     <section id="servicios" className="py-20">
       <div className="container mx-auto px-4">
         <h2
-          className="text-4xl font-bold mb-6 text-acento text-center"
+          className="text-4xl font-bold mb-6 text-acento text-center text-shadow shadow-primario/20"
           data-aos="zoom-in"
         >
           Nuestros Servicios

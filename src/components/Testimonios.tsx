@@ -38,8 +38,8 @@ export default function Testimonios() {
     <section id="testimonios" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2
-          className="text-4xl font-bold mb-12 text-center text-acento dark:text-blue-300"
-          data-aos="fade-up"
+          className="text-4xl font-bold mb-12 text-acento text-center text-shadow shadow-primario/20"
+          data-aos="zoom-in"
         >
           Lo que dicen nuestros clientes
         </h2>
