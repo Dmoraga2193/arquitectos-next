@@ -46,7 +46,7 @@ export default function HeroSection() {
   return (
     <header
       id="inicio"
-      className="relative bg-blue-900 text-white overflow-hidden h-screen"
+      className="relative bg-blue-900 text-segundario overflow-hidden h-screen"
     >
       {backgroundImages.map((bg, index) => (
         <Image
@@ -62,7 +62,7 @@ export default function HeroSection() {
           }`}
         />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-900 via-blue-800 to-transparent opacity-70"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-primario via-primerplano to-transparent opacity-70"></div>
       <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center items-start">
         <div className="flex w-full items-center justify-between">
           <motion.div
@@ -71,7 +71,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-2xl"
           >
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-yellow-300 drop-shadow-lg">
+            <h1 className="text-5xl md:text-6xl font-extrabold mb-4 text-acento drop-shadow-lg">
               Regularización sin complicaciones
             </h1>
             <p className="text-xl md:text-2xl font-semibold text-white drop-shadow-md mb-8">
@@ -81,7 +81,7 @@ export default function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-yellow-400 text-blue-900 font-bold py-3 px-6 rounded-full text-lg shadow-lg flex items-center"
+              className="bg-acento text-primerplano font-bold py-3 px-6 rounded-full text-lg shadow-lg flex items-center"
               onClick={scrollToCotizacion}
             >
               Solicita una cotización <ArrowRight className="ml-2" />

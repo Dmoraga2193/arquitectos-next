@@ -42,7 +42,7 @@ export default function Estadisticas() {
       initial={{ opacity: 0, y: 50 }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.5 }}
-      className="py-12 bg-blue-900 text-white rounded-lg mb-12"
+      className="py-12 bg-primario text-white rounded-lg mb-12"
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">

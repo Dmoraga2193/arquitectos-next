@@ -35,10 +35,10 @@ const testimonials: Testimonial[] = [
 
 export default function Testimonios() {
   return (
-    <section id="testimonios" className="py-16">
+    <section id="testimonios" className="py-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2
-          className="text-4xl font-bold mb-12 text-center text-blue-800 dark:text-blue-300"
+          className="text-4xl font-bold mb-12 text-center text-acento dark:text-blue-300"
           data-aos="fade-up"
         >
           Lo que dicen nuestros clientes
@@ -59,9 +59,9 @@ export default function Testimonios() {
 
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
-    <Card className="bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 relative overflow-hidden">
+    <Card className="bg-colorfondo dark:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 relative overflow-hidden">
       <CardContent className="p-6">
-        <QuoteIcon className="absolute top-4 right-4 text-blue-100 dark:text-blue-700 w-12 h-12 opacity-50" />
+        <QuoteIcon className="absolute top-4 right-4 text-segundario dark:text-blue-700 w-12 h-12 opacity-30" />
         <div className="flex items-center mb-4">
           <Avatar className="h-12 w-12 mr-4 border-2 border-gray-300">
             <AvatarImage src={testimonial.avatar} alt={testimonial.name} />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -35,7 +35,9 @@ export default function Navbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-white shadow-md" : "bg-transparent"
+        isScrolled
+          ? "bg-colorfondo/85 backdrop-blur-sm shadow-md"
+          : "bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,7 +65,7 @@ export default function Navbar() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300",
+                    "px-3 py-2 rounded-md text-base font-medium transition-colors duration-300",
                     isScrolled
                       ? "text-gray-800 hover:text-gray-600"
                       : "text-white hover:text-gray-300"
@@ -75,7 +77,7 @@ export default function Navbar() {
                 </Link>
                 {activeItem === item.name && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-acento"
                     layoutId="underline"
                   />
                 )}
@@ -117,10 +119,6 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
-            <Button className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white">
-              <Phone className="mr-2 h-4 w-4" />
-              Contactar
-            </Button>
           </div>
         </div>
       )}

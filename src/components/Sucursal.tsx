@@ -5,13 +5,13 @@ export default function Sucursal() {
   return (
     <section id="contacto" className="py-20">
       <div className="container mx-auto px-4" data-aos="zoom-in">
-        <h2 className="text-4xl font-bold text-center text-blue-800 mb-12">
+        <h2 className="text-4xl font-bold text-center text-acento mb-12">
           Nuestra Sucursal
         </h2>
         <Card className="overflow-hidden shadow-lg">
           <CardContent className="p-0">
             <div className="grid grid-cols-1 md:grid-cols-2">
-              <div className="p-8 bg-blue-800 text-white">
+              <div className="p-8 bg-primario text-white">
                 <h3 className="text-2xl font-semibold mb-6">
                   Información de Contacto
                 </h3>
@@ -34,20 +34,20 @@ export default function Sucursal() {
                 </div>
               </div>
               <div className="p-8 bg-white">
-                <h3 className="text-2xl font-semibold mb-6 text-blue-800">
+                <h3 className="text-2xl font-semibold mb-6 text-primario">
                   Horario de Atención
                 </h3>
                 <div className="space-y-2">
                   <p className="flex items-center">
-                    <Clock className="h-5 w-5 mr-3 text-blue-600" />
+                    <Clock className="h-5 w-5 mr-3 text-acento" />
                     <span>Lunes a Jueves: 8:30 AM - 6:00 PM</span>
                   </p>
                   <p className="flex items-center">
-                    <Clock className="h-5 w-5 mr-3 text-blue-600" />
+                    <Clock className="h-5 w-5 mr-3 text-acento" />
                     <span>Viernes: 8:30 AM - 4:45 PM</span>
                   </p>
                   <p className="flex items-center">
-                    <Clock className="h-5 w-5 mr-3 text-blue-600" />
+                    <Clock className="h-5 w-5 mr-3 text-acento" />
                     <span>Sábado y Domingo: Cerrado</span>
                   </p>
                 </div>

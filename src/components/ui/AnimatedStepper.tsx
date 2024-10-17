@@ -13,13 +13,13 @@ export function AnimatedStepper({ steps, currentStep }: AnimatedStepperProps) {
         <React.Fragment key={step}>
           <div
             className={`flex flex-col items-center ${
-              index <= currentStep ? "text-blue-600" : "text-gray-400"
+              index <= currentStep ? "text-primario" : "text-gray-400"
             }`}
           >
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                 index <= currentStep
-                  ? "bg-blue-600 text-white scale-110"
+                  ? "bg-primario text-white scale-110"
                   : "bg-gray-200"
               }`}
             >
@@ -30,7 +30,7 @@ export function AnimatedStepper({ steps, currentStep }: AnimatedStepperProps) {
           {index < steps.length - 1 && (
             <div className="flex-1 h-0.5 mx-2 bg-gray-200 relative">
               <div
-                className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-300"
+                className="absolute top-0 left-0 h-full bg-primario transition-all duration-300"
                 style={{
                   width:
                     index < currentStep

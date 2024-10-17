@@ -5,17 +5,17 @@ const services = [
   {
     title: "Evaluación Inicial",
     desc: "Análisis detallado de su propiedad",
-    icon: <ClipboardCheck className="h-10 w-10 text-blue-600" />,
+    icon: <ClipboardCheck className="h-10 w-10 text-primario" />,
   },
   {
     title: "Regularización",
     desc: "Trámites y documentación necesaria",
-    icon: <FileText className="h-10 w-10 text-blue-600" />,
+    icon: <FileText className="h-10 w-10 text-primario" />,
   },
   {
     title: "Certificación",
     desc: "Obtención de certificados de regularización",
-    icon: <Award className="h-10 w-10 text-blue-600" />,
+    icon: <Award className="h-10 w-10 text-primario" />,
   },
 ];
 
@@ -24,7 +24,7 @@ export default function Servicios() {
     <section id="servicios" className="py-20">
       <div className="container mx-auto px-4">
         <h2
-          className="text-4xl font-bold mb-6 text-blue-800 text-center"
+          className="text-4xl font-bold mb-6 text-acento text-center"
           data-aos="zoom-in"
         >
           Nuestros Servicios
@@ -44,12 +44,12 @@ export default function Servicios() {
           {services.map((service, index) => (
             <Card
               key={index}
-              className="transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              className="transition-all bg-colorfondo duration-300 hover:shadow-xl hover:-translate-y-2"
             >
               <CardContent className="p-6 flex items-start">
                 <div className="mr-4 mt-1">{service.icon}</div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2 text-blue-800">
+                  <h3 className="text-xl font-semibold mb-2 text-acento">
                     {service.title}
                   </h3>
                   <p className="text-gray-700">{service.desc}</p>

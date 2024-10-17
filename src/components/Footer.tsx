@@ -2,11 +2,13 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-8">
+    <footer className="bg-gradient-to-r from-primario to-primerplano text-white py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
-            <h3 className="text-lg font-semibold mb-4">Arquitectos Next</h3>
+            <h3 className="text-lg font-semibold mb-4 text-acento">
+              Arquitectos Next
+            </h3>
             <p className="text-sm">
               Expertos en regularización de proyectos bajo la Ley del Mono
             </p>
@@ -21,7 +23,7 @@ export default function Footer() {
             <div className="flex space-x-4">
               <Link
                 href="#"
-                className="text-white hover:text-blue-400 transition-colors duration-300"
+                className="text-white hover:text-acento transition-colors duration-300"
               >
                 <span className="sr-only">Facebook</span>
                 <svg
@@ -39,7 +41,7 @@ export default function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-white hover:text-blue-400 transition-colors duration-300"
+                className="text-white hover:text-acento transition-colors duration-300"
               >
                 <span className="sr-only">Instagram</span>
                 <svg
@@ -57,7 +59,7 @@ export default function Footer() {
               </Link>
               <Link
                 href="#"
-                className="text-white hover:text-blue-400 transition-colors duration-300"
+                className="text-white hover:text-acento transition-colors duration-300"
               >
                 <span className="sr-only">Twitter</span>
                 <svg
