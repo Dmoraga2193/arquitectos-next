@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-gradient-to-r from-primario to-primerplano text-white py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-lg font-semibold mb-4 text-acento">
               Arquitectos Next
             </h3>
@@ -13,12 +13,12 @@ export default function Footer() {
               Expertos en regularización de proyectos bajo la Ley del Mono
             </p>
           </div>
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-lg font-semibold mb-4">Contacto</h3>
             <p className="text-sm">Email: info@arquitectosnext.cl</p>
             <p className="text-sm">Teléfono: +56 9 1234 5678</p>
           </div>
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-lg font-semibold mb-4">Síguenos</h3>
             <div className="flex space-x-4">
               <Link
