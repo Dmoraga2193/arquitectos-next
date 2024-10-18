@@ -516,8 +516,8 @@ export default function Cotizacion() {
 
   return (
     <section id="cotiza">
-      <Card className="w-full max-w-4xl mx-auto" data-aos="zoom-in">
-        <CardHeader className="scroll-mt-20 py-18">
+      <Card className="overflow-hidden shadow-lg" data-aos="zoom-in">
+        <CardHeader className="bg-primario text-segundario p-6 mb-6">
           <h2 className="text-4xl font-bold mb-6 text-center text-acento text-shadow shadow-primario/20">
             Solicitar Cotización
           </h2>
