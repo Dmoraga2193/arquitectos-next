@@ -36,39 +36,39 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
-          ? "bg-colorfondo/85 backdrop-blur-sm shadow-md"
-          : "bg-transparent"
+          ? "bg-colorfondo/85 backdrop-blur-sm shadow-md h-16"
+          : "bg-transparent h-20"
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex items-center justify-between h-full">
           <Link href="/" className="flex items-center">
             <Image
               src="/assets/images/logo.png"
               alt="Logo de Arquitectos Next Web"
-              width={50}
-              height={50}
-              className="mr-2"
+              width={isScrolled ? 40 : 50}
+              height={isScrolled ? 40 : 50}
+              className="mr-2 transition-all duration-300"
             />
             <span
               className={cn(
-                "text-2xl font-bold transition-colors duration-300",
-                isScrolled ? "text-gray-800" : "text-white"
+                "font-bold transition-all duration-300",
+                isScrolled ? "text-gray-800 text-xl" : "text-white text-2xl"
               )}
             >
               Arquitectos Next
             </span>
           </Link>
-          <div className="hidden md:flex  items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <div key={item.name} className="relative">
                 <Link
                   href={item.href}
                   className={cn(
-                    "px-3 py-2 rounded-md text-base font-medium transition-colors duration-300",
+                    "px-3 py-2 rounded-md font-medium transition-all duration-300",
                     isScrolled
-                      ? "text-gray-800 hover:text-gray-600"
-                      : "text-white hover:text-gray-300"
+                      ? "text-gray-800 hover:text-gray-600 text-sm"
+                      : "text-white hover:text-gray-300 text-base"
                   )}
                   onMouseEnter={() => setActiveItem(item.name)}
                   onClick={() => setActiveItem(item.name)}
